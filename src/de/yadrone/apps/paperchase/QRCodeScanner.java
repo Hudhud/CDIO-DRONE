@@ -43,6 +43,7 @@ public class QRCodeScanner implements ImageListener
 		double theta = Double.NaN;
 		try
 		{
+			System.out.println("STARTING TO READ QR");
 			multiScanResult = multiReader.decodeMultiple(bitmap);
 			double[] thetas = new double[multiScanResult.length];
 					
@@ -52,8 +53,15 @@ public class QRCodeScanner implements ImageListener
 			ResultPoint a = points[1]; // top-left
 			ResultPoint b = points[2]; // top-right
 			
+			//ResultPoint c = points[3];//bottom left
+			System.out.println("TOP LEFT X = " + a.getX() + " TOP LEFT Y = " + a.getY());
+			System.out.println("TOP RIGHT X = " + b.getX() + " TOP RIGHT Y = " + b.getY());
+			//System.out.println("BOTTOM LEFT X = " + c.getX() + " BOTTOM LEFT Y = " + c.getY());
 			// Find the degree of the rotation (needed e.g. for auto control)
-
+			System.out.println("DISTANCE BETWEEN TOP LEFT AND TOP RIGHT = " + ResultPoint.distance(a, b));
+			float pixel = ResultPoint.distance(a, b);
+			double distanceToObject = 4.45 * 110 * 360 / (pixel * 3.17);
+			System.out.println("DISTANCE IN MM = " + distanceToObject);
 			double z = Math.abs(a.getX() - b.getX());
 			double x = Math.abs(a.getY() - b.getY());
 			thetas[i] = Math.atan(x / z); // degree in rad (+- PI/2)

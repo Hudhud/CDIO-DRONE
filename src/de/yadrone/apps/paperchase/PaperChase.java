@@ -37,8 +37,8 @@ public class PaperChase
 		scanner = new QRCodeScanner();
 		scanner.addListener(gui);
 		
-		objectdetection = new ObjectDetection();
-		drone.getVideoManager().addImageListener(objectdetection);
+//		objectdetection = new ObjectDetection();
+//		drone.getVideoManager().addImageListener(objectdetection);
 		
 		drone.getVideoManager().addImageListener(gui);
 		drone.getVideoManager().addImageListener(scanner);
