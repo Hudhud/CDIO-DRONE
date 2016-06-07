@@ -25,15 +25,14 @@ public class TutorialCommander
 		drone.getCommandManager().hover().doFor(5000);
 //		drone.getCommandManager().up(100).doFor(60000);
 //		drone.getCommandManager().hover().doFor(10000);
-		drone.getCommandManager().forward(100).doFor(3000);
-		System.out.println(drone.getSpeed());
-		
+		drone.getCommandManager().forward(30).doFor(1000);
+		drone.getCommandManager().hover().doFor(3000);
 		
 		//		drone.getCommandManager().up(30).doFor(1000);
 //		drone.getCommandManager().forward(30).doFor(1000);
 //		drone.getCommandManager().hover().doFor(2000);
 //		drone.getCommandManager().spinRight(100).doFor(2000);
-	//	drone.getCommandManager().landing();
+		drone.getCommandManager().landing();
 		
 	}
 	

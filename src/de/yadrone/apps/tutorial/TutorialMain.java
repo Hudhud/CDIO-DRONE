@@ -3,10 +3,8 @@ package de.yadrone.apps.tutorial;
 
 import de.yadrone.base.ARDrone;
 import de.yadrone.base.IARDrone;
-import de.yadrone.base.command.LEDAnimation;
 import de.yadrone.base.exception.ARDroneException;
 import de.yadrone.base.exception.IExceptionListener;
-import de.yadrone.base.navdata.AttitudeListener;
 
 public class TutorialMain
 {
@@ -29,7 +27,7 @@ public class TutorialMain
 			drone.getCommandManager().setMaxAltitude(3000);
 			drone.setSpeed(100);
 			drone.start();
-			
+
 			
 			// Tutorial Section 2
 			new TutorialAttitudeListener(drone);
