@@ -25,7 +25,7 @@ public class TutorialAttitudeListener
 
 			public void batteryLevelChanged(int percentage)
 			{
-				//				System.out.println("Battery: " + percentage + " %");
+//								System.out.println("Battery: " + percentage + " %");
 
 
 			}
@@ -33,15 +33,15 @@ public class TutorialAttitudeListener
 			public void voltageChanged(int vbat_raw) { }
 		});
 
-		drone.getNavDataManager().addVelocityListener(new VelocityListener() {
-
-			@Override
-			public void velocityChanged(float vx, float vy, float vz) {
-				System.out.println("speedx: " + vx);
-				System.out.println("speedy: " + vy);
-
-			}
-		});
+//		drone.getNavDataManager().addVelocityListener(new VelocityListener() {
+//
+//			@Override
+//			public void velocityChanged(float vx, float vy, float vz) {
+//				System.out.println("speedx: " + vx);
+//				System.out.println("speedy: " + vy);
+//
+//			}
+//		});
 	}
 
 }

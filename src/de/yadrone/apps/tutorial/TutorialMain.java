@@ -23,9 +23,8 @@ public class TutorialMain
 					exc.printStackTrace();
 				}
 			});
-			drone.getCommandManager().setMinAltitude(2500);
-			drone.getCommandManager().setMaxAltitude(3000);
-			drone.setSpeed(100);
+			drone.getCommandManager().setMinAltitude(1000);
+			drone.getCommandManager().setMaxAltitude(1000);
 			drone.start();
 
 			

@@ -81,20 +81,25 @@ public class TutorialVideoListener extends JFrame
 			}
 		});
 	}
+	Point pt;
 	double distanceToObject;
 	boolean forward = false;
 	private IARDrone drone;
 	private ImageListener imageListener = new ImageListener() {
-		public void imageUpdated(BufferedImage image)
+		public void imageUpdated(final BufferedImage image)
 		{
+			Thread t = new Thread(new Runnable() { public void run() { 
+				
+			
 
 			byte[] pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 			Mat frame = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
 			Mat gray = new Mat();
 			frame.put(0, 0, pixel);
-
+			
 			Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY );
-			Imgproc.GaussianBlur(gray, gray ,new Size(9, 9), 2, 2 );
+//			Imgproc.GaussianBlur(gray, gray ,new Size(9, 9), 2, 2 );
+//			Imgproc.equalizeHist(gray, gray);
 
 			Mat circles = new Mat();
 			Imgproc.HoughCircles(gray, circles, Imgproc.CV_HOUGH_GRADIENT, 1, gray.rows()/8, 200, 100, 0, 0);
@@ -106,36 +111,51 @@ public class TutorialVideoListener extends JFrame
 
 					if (vCircle == null)
 						break;
-
-					Point pt = new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
+					
+					pt = new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
 					int radius = (int)Math.round(vCircle[2]);
-
-
-					Imgproc.circle(frame, pt, radius, new Scalar(0,255,0), 1);
-					Imgproc.circle(frame, pt, 3, new Scalar(0,0,255), 1);
-
+					
+//					Imgproc.circle(frame, pt, radius, new Scalar(0,255,0), 1);
+//					Imgproc.circle(frame, pt, 3, new Scalar(0,0,255), 1);
+//					
 					distanceToObject = 4.45 * 750 * frame.height()/ ((radius*2)*3.17);
 					int time = (int)distanceToObject/3;
 					
-					if(!forward){
-					if(distanceToObject > 500){
-						forward = true;
-						drone.getCommandManager().forward(100).doFor(time+2000);
-						drone.getCommandManager().hover().doFor(2000);
-						drone.getCommandManager().landing();
-						forward = false;
-					} else {
-						drone.getCommandManager().landing();
-					}
-					}
+					
+			
+					
+					
+//					if(!forward){
+//					if(distanceToObject > 500){
+//						forward = true;
+//						drone.getCommandManager().forward(100).doFor(time+2000);
+//						drone.getCommandManager().hover().doFor(2000);
+//						drone.getCommandManager().landing();
+//						forward = false;
+//					} else {
+//						drone.getCommandManager().landing();
+//					}
+//					}
 					System.out.println(distanceToObject);
 
 				}
+				
+				 		if(frame.width()/2+50 > pt.x){
+				 			drone.getCommandManager().spinLeft(20);
+						}
+						else if(frame.width()/2-50< pt.x){
+							drone.getCommandManager().spinRight(20);
+						}
+						else{
+							drone.getCommandManager().hover();
+						}
 
 
-				setImage(mat2img(frame));
+				//setImage(mat2img(frame));
 
 			}
+			}});
+			t.start();
 		}
 	};
 
@@ -164,7 +184,6 @@ public class TutorialVideoListener extends JFrame
 		return imageListener;
 
 	}
-
 
 	public synchronized void paint(Graphics g)
 	{

@@ -22,11 +22,11 @@ public class TutorialCommander
 	public void takeOffAndLand()
 	{
 		drone.takeOff();
-		drone.getCommandManager().hover().doFor(5000);
-//		drone.getCommandManager().up(100).doFor(60000);
+		drone.getCommandManager().hover().doFor(10000);
+		drone.getCommandManager().up(30).doFor(60000);
 //		drone.getCommandManager().hover().doFor(10000);
-		drone.getCommandManager().forward(30).doFor(1000);
-		drone.getCommandManager().hover().doFor(3000);
+//		drone.getCommandManager().forward(30).doFor(1000);
+//		drone.getCommandManager().hover().doFor(3000);
 		
 		//		drone.getCommandManager().up(30).doFor(1000);
 //		drone.getCommandManager().forward(30).doFor(1000);
