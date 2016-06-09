@@ -12,6 +12,7 @@ import org.opencv.imgproc.Imgproc;
 
 import de.yadrone.base.IARDrone;
 import de.yadrone.base.video.ImageListener;
+import de.yadrone.apps.paperchase.PaperChaseGUI;
 
 public class CircleDetection implements ImageListener{
 
@@ -21,39 +22,36 @@ public class CircleDetection implements ImageListener{
 	int time;
 	private final IARDrone drone;
 	private long imageCount = 0;
-	
-	
+	PaperChaseGUI gui;
+	byte[] pixel = new byte[16];
+	int margin;
+
 	public CircleDetection(final IARDrone drone){
 		super();
-		
+
 		this.drone = drone;
-		
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 	public void imageUpdated(final BufferedImage image)
 	{
-		if ((++imageCount % 2) == 0){
-			return;
-		}
-		
-		System.out.println("Converting image");
-	
-		byte[] pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+		//		if ((++imageCount % 2) == 0){
+		//			return;
+		//		}
+
+
+		pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 		Mat frame = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
 		Mat gray = new Mat();
-		frame.put(0, 0, pixel);
-		
-		
+		frame.put(0, 0, pixel);		
 
-		System.out.println("Image Converted");
 		Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY );
-					Imgproc.GaussianBlur(gray, gray ,new Size(9, 9), 2, 2 );
-					Imgproc.equalizeHist(gray, gray);
+		Imgproc.GaussianBlur(gray, gray ,new Size(9, 9), 2, 2 );
+		Imgproc.equalizeHist(gray, gray);
 
 		Mat circles = new Mat();
 		Imgproc.HoughCircles(gray, circles, Imgproc.CV_HOUGH_GRADIENT, 1, gray.rows()/8, 200, 100, 0, 0);
-		System.out.println(circles.cols());
 		if (circles.cols() > 0){
+
 			System.out.println("Circle found");
 			for (int x = 0; x < circles.cols(); x++) 
 			{
@@ -71,10 +69,6 @@ public class CircleDetection implements ImageListener{
 				distanceToObject = 4.45 * 750 * frame.height()/ ((radius*2)*3.17);
 				time = (int)distanceToObject/3;
 
-
-
-
-
 				//					if(!forward){
 				//					if(distanceToObject > 500){
 				//						forward = true;
@@ -89,22 +83,41 @@ public class CircleDetection implements ImageListener{
 				System.out.println("Distance: " + distanceToObject + " Frame Middle: "+ frame.width()/2 + " Center of Circle: " + pt.x);
 
 			}
-			if(frame.width()/2+10 > pt.x){
-				drone.getCommandManager().spinRight(20).doFor(100);
+
+			margin = (int) (15*(distanceToObject/1000));
+
+			if(frame.height()/2 + margin < pt.y){
+				System.out.println("down");
+				drone.getCommandManager().down(20).doFor(100);
+				drone.getCommandManager().hover();
 			}
-			else if(frame.width()/2-10< pt.x){
-				drone.getCommandManager().spinLeft(20).doFor(100);
+			else if(frame.height()/2 - margin > pt.y){
+				System.out.println("up");
+				drone.getCommandManager().up(20).doFor(100);
+				drone.getCommandManager().hover();
+			}
+			else if(frame.width()/2+margin < pt.x){
+				drone.getCommandManager().spinRight(30).doFor(33);
+				drone.getCommandManager().hover();
+				System.out.println("RIGHT");
+
+			}
+			else if(frame.width()/2-margin > pt.x){
+				drone.getCommandManager().spinLeft(30).doFor(33);
+				drone.getCommandManager().hover();
+				System.out.println("LEFT");
 			}
 
-			else if(frame.width()/2+10 < pt.x && frame.width()/2-10>pt.x){
+			else if(frame.width()/2+margin > pt.x && frame.width()/2-margin<pt.x){
 				System.out.println("GO");
-				drone.getCommandManager().forward(30).doFor(time+2000);					
-
+				drone.getCommandManager().forward(30).doFor(time+2000);
+				drone.getCommandManager().hover();
 			}
 
 			else{
 				drone.getCommandManager().hover();
 			}
+
 		}
 	}
 
