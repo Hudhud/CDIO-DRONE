@@ -1,6 +1,7 @@
 package de.yadrone.apps.tutorial;
 
 
+import de.yadrone.apps.paperchase.controller.PaperChaseKeyboardController;
 import de.yadrone.base.ARDrone;
 import de.yadrone.base.IARDrone;
 import de.yadrone.base.exception.ARDroneException;
@@ -9,7 +10,7 @@ import de.yadrone.base.exception.IExceptionListener;
 public class TutorialMain
 {
 	private static IARDrone drone = null;
-	
+
 	public static void main(String[] args)
 	{
 
@@ -27,13 +28,16 @@ public class TutorialMain
 			drone.getCommandManager().setMaxAltitude(1000);
 			drone.start();
 
-			
+
 			// Tutorial Section 2
 			new TutorialAttitudeListener(drone);
-																									
+
 			// Tutorial Section 3
-		//	new TutorialVideoListener(drone);
-			
+			//	new TutorialVideoListener(drone);
+
+			PaperChaseKeyboardController keyboardController = new PaperChaseKeyboardController(drone);
+			keyboardController.start();
+
 			Thread t = new Thread() {
 				public void run() {
 					TutorialVideoListener video = new TutorialVideoListener(drone);
@@ -41,12 +45,12 @@ public class TutorialMain
 				}
 			};
 			t.start();
-			
+			//			
 			//Tutorial Section 4
 			TutorialCommander commander = new TutorialCommander(drone);
 			commander.animateLEDs();
-			commander.takeOffAndLand();
-//			commander.leftRightForwardBackward();
+			//commander.takeOffAndLand();
+			//			commander.leftRightForwardBackward();
 		}
 		catch (Exception exc)
 		{

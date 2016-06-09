@@ -30,7 +30,7 @@ public class XugglerDecoder implements VideoDecoder
 
 		// Create a Xuggler container object
 		IContainer container = IContainer.make();
-
+		
 		// Open up the container
 		if (container.open(is, null) < 0)
 			throw new IllegalArgumentException("could not open inpustream");

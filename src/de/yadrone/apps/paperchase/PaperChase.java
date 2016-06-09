@@ -17,7 +17,7 @@ public class PaperChase
 	private IARDrone drone = null;
 	private PaperChaseAbstractController autoController;
 	private QRCodeScanner scanner = null;
-	private ObjectDetection objectdetection = null;
+	private CircleDetection objectdetection = null;
 	
 	public PaperChase()
 	{
@@ -34,14 +34,14 @@ public class PaperChase
 		// auto controller is instantiated, but not started
 		autoController = new PaperChaseAutoController(drone);
 		
-		scanner = new QRCodeScanner();
-		scanner.addListener(gui);
-		
-//		objectdetection = new ObjectDetection();
-//		drone.getVideoManager().addImageListener(objectdetection);
+//		scanner = new QRCodeScanner();
+//		scanner.addListener(gui);
+//		
+		objectdetection = new CircleDetection(drone);
+		drone.getVideoManager().addImageListener(objectdetection);
 		
 		drone.getVideoManager().addImageListener(gui);
-		drone.getVideoManager().addImageListener(scanner);
+		//drone.getVideoManager().addImageListener(scanner);
 	}
 	
 	public void enableAutoControl(boolean enable)

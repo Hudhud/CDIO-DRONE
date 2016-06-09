@@ -27,8 +27,9 @@ public class QRCodeScanner implements ImageListener
 	
 	public void imageUpdated(BufferedImage image)
 	{
-		if ((++imageCount % 2) == 0)
+		if ((++imageCount % 2) == 0){
 			return;
+			}
 		
 		// try to detect QR code
 		LuminanceSource source = new BufferedImageLuminanceSource(image);
@@ -43,7 +44,7 @@ public class QRCodeScanner implements ImageListener
 		double theta = Double.NaN;
 		try
 		{
-			System.out.println("STARTING TO READ QR");
+//			System.out.println("STARTING TO READ QR");
 			multiScanResult = multiReader.decodeMultiple(bitmap);
 			double[] thetas = new double[multiScanResult.length];
 					
