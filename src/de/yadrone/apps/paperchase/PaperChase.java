@@ -53,7 +53,7 @@ public class PaperChase
 		if(state.isVideoReady()){
 		Thread t = new Thread(){
 		public void run(){
-		CircleDetection objectdetection = new CircleDetection(drone, state, commander);
+		CircleDetection objectdetection = new CircleDetection(state, commander);
 		drone.getVideoManager().addImageListener(objectdetection);
 		}}; 
 		t.start();
