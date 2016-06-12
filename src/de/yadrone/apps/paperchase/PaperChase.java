@@ -11,8 +11,8 @@ import de.yadrone.base.navdata.BatteryListener;
 
 public class PaperChase 
 {
-	public final static int IMAGE_WIDTH = 1280; // 640 or 1280
-	public final static int IMAGE_HEIGHT = 720; // 360 or 720
+	public final static int IMAGE_WIDTH = 640; // 640 or 1280
+	public final static int IMAGE_HEIGHT = 360; // 360 or 720
 	
 	public final static int TOLERANCE = 80;
 	
@@ -20,6 +20,7 @@ public class PaperChase
 	private PaperChaseAbstractController autoController;
 	private QRCodeScanner scanner = null;
 	private StateController state;
+	private DroneCommander commander;
 	
 	public PaperChase()
 	{
@@ -31,7 +32,7 @@ public class PaperChase
 		drone.getCommandManager().setMaxVz(2000);
 		drone.start();
 		drone.getCommandManager().setVideoChannel(VideoChannel.HORI);
-		drone.getCommandManager().setVideoCodec(VideoCodec.H264_720P);
+		drone.getCommandManager().setVideoCodec(VideoCodec.H264_360P);
 		PaperChaseGUI gui = new PaperChaseGUI(drone, this);
 		
 		// keyboard controller is always enabled and cannot be disabled (for safety reasons)
@@ -47,11 +48,12 @@ public class PaperChase
 		scanner = new QRCodeScanner();
 		scanner.addListener(gui);
 		
-		if(state.isVideoReady()){
+		commander = new DroneCommander(drone);
 		
+		if(state.isVideoReady()){
 		Thread t = new Thread(){
 		public void run(){
-		CircleDetection objectdetection = new CircleDetection(drone, state);
+		CircleDetection objectdetection = new CircleDetection(drone, state, commander);
 		drone.getVideoManager().addImageListener(objectdetection);
 		}}; 
 		t.start();

@@ -31,6 +31,8 @@ import com.google.zxing.ResultPoint;
 
 import de.yadrone.apps.tutorial.TutorialAttitudeListener;
 import de.yadrone.base.IARDrone;
+import de.yadrone.base.command.CalibrationCommand;
+import de.yadrone.base.command.Device;
 import de.yadrone.base.navdata.BatteryListener;
 import de.yadrone.base.navdata.ControlState;
 import de.yadrone.base.navdata.DroneState;
@@ -158,11 +160,36 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 		startknap.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) 
 			{
-				drone.getCommandManager().flatTrim().doFor(100);
-				drone.getCommandManager().takeOff().doFor(3000);
-				drone.getCommandManager().hover().doFor(3000);
-				drone.getCommandManager().up(30).doFor(2000);
-				drone.getCommandManager().hover().doFor(15000);
+				Thread t = new Thread(new Runnable() {
+					public void run() {
+						drone.getCommandManager().flatTrim().doFor(100);
+						drone.getCommandManager().takeOff().doFor(5000);
+						drone.getCommandManager().hover().doFor(2000);
+						drone.getCommandManager().up(60).doFor(900);
+						drone.getCommandManager().hover();
+//						drone.getCommandManager().setCommand(new CalibrationCommand(Device.MAGNETOMETER)).doFor(6000);
+//						drone.getCommandManager().hover().doFor(1000);
+//						drone.getCommandManager().forward(100).doFor(1000);
+//						drone.getCommandManager().backward(60).doFor(400);
+//						drone.getCommandManager().hover().doFor(1500);
+//						drone.getCommandManager().spinLeft(100).doFor(1700);
+//						drone.getCommandManager().hover().doFor(2000);
+//						drone.getCommandManager().forward(100).doFor(1000);
+//						drone.getCommandManager().backward(60).doFor(400);
+//						drone.getCommandManager().hover();
+//						drone.getCommandManager().forward(100).doFor(1500);
+//						drone.getCommandManager().backward(60).doFor(400);
+//						drone.getCommandManager().hover().doFor(1500);
+//						drone.getCommandManager().backward(100).doFor(2000);
+//						drone.getCommandManager().forward(100).doFor(200);
+//						drone.getCommandManager().hover();
+					}
+				});
+				t.start();
+				
+//				drone.getCommandManager().hover().doFor(3000);
+//				drone.getCommandManager().up(30).doFor(2000);
+//				drone.getCommandManager().hover().doFor(15000);
 			}
 		});
 		startknap.setSize(100, 100);
