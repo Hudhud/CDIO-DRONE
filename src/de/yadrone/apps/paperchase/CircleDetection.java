@@ -11,6 +11,9 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import de.yadrone.base.IARDrone;
+import de.yadrone.base.navdata.ControlState;
+import de.yadrone.base.navdata.DroneState;
+import de.yadrone.base.navdata.StateListener;
 import de.yadrone.base.video.ImageListener;
 import de.yadrone.apps.paperchase.PaperChaseGUI;
 
@@ -25,11 +28,18 @@ public class CircleDetection implements ImageListener{
 	PaperChaseGUI gui;
 	byte[] pixel = new byte[16];
 	int margin;
-
-	public CircleDetection(final IARDrone drone){
+	Mat frame;
+	boolean go = false;
+	boolean ready = false;
+	StateController state;
+	int sleep = 40;
+	
+	
+	public CircleDetection(final IARDrone drone, StateController state){
 		super();
 
 		this.drone = drone;
+		this.state = state;
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 	public void imageUpdated(final BufferedImage image)
@@ -38,7 +48,8 @@ public class CircleDetection implements ImageListener{
 		//			return;
 		//		}
 
-
+		if(state.isReady()){
+		
 		pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 		Mat frame = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
 		Mat gray = new Mat();
@@ -84,40 +95,57 @@ public class CircleDetection implements ImageListener{
 
 			}
 
-			margin = (int) (15*(distanceToObject/1000));
-
+	//		margin = (int) (30*(distanceToObject/1000));			
+			margin = (int) (120/(distanceToObject/1000));
+			
+			
 			if(frame.height()/2 + margin < pt.y){
 				System.out.println("down");
-				drone.getCommandManager().down(20).doFor(100);
+				drone.getCommandManager().down(20).doFor(30);
+				try {
+					Thread.currentThread();
+					Thread.sleep(sleep);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				drone.getCommandManager().hover();
 			}
 			else if(frame.height()/2 - margin > pt.y){
 				System.out.println("up");
-				drone.getCommandManager().up(20).doFor(100);
+				drone.getCommandManager().up(20).doFor(30);
 				drone.getCommandManager().hover();
 			}
 			else if(frame.width()/2+margin < pt.x){
-				drone.getCommandManager().spinRight(30).doFor(33);
+				drone.getCommandManager().spinRight(30).doFor(30);
 				drone.getCommandManager().hover();
 				System.out.println("RIGHT");
 
 			}
 			else if(frame.width()/2-margin > pt.x){
-				drone.getCommandManager().spinLeft(30).doFor(33);
+				drone.getCommandManager().spinLeft(30).doFor(30);
 				drone.getCommandManager().hover();
 				System.out.println("LEFT");
 			}
 
-			else if(frame.width()/2+margin > pt.x && frame.width()/2-margin<pt.x){
+			else if(frame.width()/2+margin > pt.x && frame.width()/2-margin<pt.x && go == false){
+				if(distanceToObject > 2000){
+					System.out.println("Go closer");
+					drone.getCommandManager().forward(30).doFor(300);
+					drone.getCommandManager().hover();
+				}
+				else{
 				System.out.println("GO");
-				drone.getCommandManager().forward(30).doFor(time+2000);
+				go = true;
+				drone.getCommandManager().forward(30).doFor(1000);
 				drone.getCommandManager().hover();
+				}
 			}
 
-			else{
-				drone.getCommandManager().hover();
+//			else{
+//				drone.getCommandManager().hover();
+//			}
 			}
-
 		}
 	}
 

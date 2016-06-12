@@ -18,6 +18,7 @@ import java.awt.image.BufferedImage;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -30,6 +31,7 @@ import com.google.zxing.ResultPoint;
 
 import de.yadrone.apps.tutorial.TutorialAttitudeListener;
 import de.yadrone.base.IARDrone;
+import de.yadrone.base.navdata.BatteryListener;
 import de.yadrone.base.navdata.ControlState;
 import de.yadrone.base.navdata.DroneState;
 import de.yadrone.base.navdata.StateListener;
@@ -39,12 +41,12 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 {
 	private PaperChase main;
 	private IARDrone drone;
-
+	
 	private BufferedImage image = null;
 	private Result result;
 	private Result[] multiResult;
 	private String orientation;
-
+	
 
 	private String[] qrToFind = new String[] {"P.00", "P.01"};
 	private boolean[] qrFound = new boolean[] {false, false};
@@ -58,7 +60,9 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 	//
 
 	private JPanel videoPanel;
-
+	private JButton startknap;
+	private int batterypercentage;
+	
 	private Timer timer = new Timer();
 	private long gameStartTimestamp = System.currentTimeMillis();
 	private String gameTime = "0:00";
@@ -71,9 +75,10 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 
 		this.main = main;
 		this.drone = drone;
-
 		createMenuBar();
-
+		
+		batteryListener();
+		
 		setSize(PaperChase.IMAGE_WIDTH, PaperChase.IMAGE_HEIGHT);
 		setVisible(true);
 		setResizable(false);
@@ -101,10 +106,31 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 				}
 			}
 
-			public void controlStateChanged(ControlState state) { }
+			public void controlStateChanged(ControlState state) {  }
 		});
+		
+	
 
 		pack();
+		
+
+		createStartKnap();
+	}
+	
+	private void batteryListener(){
+		drone.getNavDataManager().addBatteryListener(new BatteryListener() {
+
+			public void batteryLevelChanged(int percentage)
+			{
+				batterypercentage = percentage;
+			}
+
+			@Override
+			public void voltageChanged(int vbat_raw) {
+				// TODO Auto-generated method stub
+				
+			}
+	});
 	}
 
 	private void createMenuBar()
@@ -126,6 +152,24 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 
 		setJMenuBar(menuBar);
 	}
+	
+	private void createStartKnap(){
+		startknap = new JButton("start");
+		startknap.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) 
+			{
+				drone.getCommandManager().flatTrim().doFor(100);
+				drone.getCommandManager().takeOff().doFor(3000);
+				drone.getCommandManager().hover().doFor(3000);
+				drone.getCommandManager().up(30).doFor(2000);
+				drone.getCommandManager().hover().doFor(15000);
+			}
+		});
+		startknap.setSize(100, 100);
+		startknap.setVisible(true);
+		videoPanel.add(startknap);
+	}
+
 
 	private JPanel createVideoPanel()
 	{
@@ -134,7 +178,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 			private Font tagFont = new Font("SansSerif", Font.BOLD, 14);
 			private Font timeFont = new Font("SansSerif", Font.BOLD, 18);
 			private Font gameOverFont = new Font("SansSerif", Font.BOLD, 36);
-
+			
 			public void paint(Graphics g)
 			{
 				if (image != null)
@@ -147,7 +191,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 					g.setFont(tagFont);
 				
 					g.drawString("Shreds to find", 10, 20);
-
+					g.drawString("Battery: "+batterypercentage+"%", 10, 80);
 					for (int i=0; i < qrToFind.length; i++)
 					{
 						if (qrFound[i])
