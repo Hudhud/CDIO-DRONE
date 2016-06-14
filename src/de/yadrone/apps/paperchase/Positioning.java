@@ -95,6 +95,8 @@ public class Positioning {
 
 	public void calculatePosition(Result[] scanResults) {
 		double[] angles = new double[scanResults.length-1];
+		double[] distanceBetweenQRs = new double[angles.length]; 
+		double[] angleBetweenQRs = new double[angles.length];
 		for(int i = 0; i < scanResults.length-1; i++) {
 			double distanceBetweenCodes =
 					Math.hypot(scanResults[i].getResultPoints()[0].getX()
@@ -102,8 +104,20 @@ public class Positioning {
 					scanResults[i].getResultPoints()[0].getY()
 					-scanResults[i+1].getResultPoints()[0].getY());
 			angles[i] = distanceBetweenCodes*CAMERA_ANGLE/DIAGONAL_SIZE;
+			Double[] p1 = values.get(scanResults[i].getText());
+			Double[] p2 = values.get(scanResults[i+1].getText());
+			distanceBetweenQRs[i] = Math.hypot(p2[0]-p1[0], p2[1]-p1[1]);
 		}
 		System.out.println(angles[0]);
+		
+		double[][] centers = new double[angles.length][2];
+		
+		for(int i = 0; i < angles.length; i++) {
+			double qrAngles = (180-angles[i])/2;
+			double lengthToCenter = distanceBetweenQRs[i]
+					*Math.sin(qrAngles)/Math.sin(angles[i]);
+			
+		}
 	}
 
 	private double[] calculateCircleIntersection(double[] p1, double[] p2, double[] distances) {
@@ -119,9 +133,6 @@ public class Positioning {
 		pfinal2[0] = px[0]-h*(p2[1]-p1[1])/d;
 		pfinal1[1] = px[1]-h*(p2[0]-p1[0])/d;
 		pfinal2[1] = px[1]+h*(p2[0]-p1[0])/d;
-
-		System.out.println(pfinal1[0] + ", " + pfinal1[1]);
-		System.out.println(pfinal2[0] + ", " + pfinal2[1]);
 
 		double[] coords = new double[2];
 		
