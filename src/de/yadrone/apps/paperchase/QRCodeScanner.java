@@ -3,6 +3,8 @@ package de.yadrone.apps.paperchase;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -30,6 +32,8 @@ public class QRCodeScanner implements ImageListener
 	private long imageCount = 0;
 	private QRCodeScan qr = new QRCodeScan();
 	byte[] pixel = new byte[16];
+	private ArrayList<QRCode> qrCodes;
+	
 	
 	public void imageUpdated(BufferedImage image)
 	{
@@ -43,6 +47,19 @@ public class QRCodeScanner implements ImageListener
 
 		//readMultiple(bitmap);
 		findQRCodes(image);
+		
+		ListIterator<QRCode> iterator = qrCodes.listIterator();
+		while(iterator.hasNext()){
+		//Her kan i få fat i QR koderne
+		QRCode qrCode = iterator.next();
+		
+		//hent data fra deres getMetoder
+		double distance = qrCode.getDistance();
+		//do something
+		
+		
+		}
+		
 	}
 	
 	private void findQRCodes(BufferedImage image){
@@ -51,7 +68,7 @@ public class QRCodeScanner implements ImageListener
 		frame.put(0, 0, pixel);		
 
 		try {
-			qr.findQRCodes(frame);
+			qrCodes = qr.findQRCodes(frame);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

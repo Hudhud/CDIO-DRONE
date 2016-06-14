@@ -36,7 +36,7 @@ public class QRCodeScan {
 	private double distanceToQr;
 	private int counter = 0;
 
-	public BufferedImage findQRCodes(Mat newImage) throws Exception {
+	public ArrayList<QRCode> findQRCodes(Mat newImage) throws Exception {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
 		Mat grey = new Mat(newImage.size(), CvType.makeType(newImage.depth(), 1));
@@ -169,7 +169,8 @@ public class QRCodeScan {
 				}
 
 				}
-				return mat2img(newImage);
+				//return mat2img(newImage);
+			return qrList;
 		}
 
 		else {
