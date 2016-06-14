@@ -48,7 +48,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 	private Result result;
 	private Result[] multiResult;
 	private String orientation;
-	
+	private String[] orientations;
 
 	private String[] qrToFind = new String[] {"P.00", "P.01"};
 	private boolean[] qrFound = new boolean[] {false, false};
@@ -256,8 +256,9 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 							g.setColor(Color.RED);
 							g.setFont(tagFont);
 							g.drawString(multiResult[i].getText(), (int)a.getX(), (int)a.getY());
-							g.drawString(orientation, (int)a.getX(), (int)a.getY() + 20);
-
+							g.setColor(Color.MAGENTA);
+							g.drawString(orientations[i], (int)a.getX(), (int)a.getY() + 20);
+							System.out.println("Vinkel : " +orientations[i]);
 							if ((System.currentTimeMillis() - multiResult[i].getTimestamp()) > 1000)
 							{
 								multiResult = null;
@@ -345,15 +346,17 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 		});
 	}
 
-	public void onTags(Result[] multiResult, float orientation)
+	public void onTags(Result[] multiResult, double[] orientation)
 	{
 		if (multiResult != null)
 		{
 			this.multiResult = multiResult;
-			this.orientation = orientation + "°";
+			//this.orientation = orientation + ;
+			String[] orientations = new String[multiResult.length];
 
 			// check if that's a tag (shred) which has not be seen before and mark it as 'found'
 			for(int i = 0; i < multiResult.length; i++){
+				orientations[i] = orientation[i] + "°";
 				for (int j=0; j < qrToFind.length; j++)
 				{
 					if (qrToFind[j].equals(multiResult[i].getText()) && !qrFound[i])
@@ -363,6 +366,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 					}
 				}
 
+				
 				// now check if all shreds have been found and if so, set the gameOver flag
 				boolean isGameOver = true;
 				for (int j=0; j < qrFound.length; j++)
@@ -377,6 +381,8 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 					stopGameTimeCounter();
 				}
 			}
+			this.orientations = orientations;
+			
 		}
 	}
 

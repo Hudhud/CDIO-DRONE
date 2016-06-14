@@ -39,7 +39,7 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Spin Left");
-				drone.getCommandManager().spinLeft(50).doFor(30).hover();
+				drone.getCommandManager().spinLeft(30).doFor(30).hover();
 				//Hover();
 			}
 		});
@@ -50,7 +50,29 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Spin right");
-				drone.getCommandManager().spinRight(50).doFor(30).hover();
+				drone.getCommandManager().spinRight(30).doFor(30).hover();
+				//Hover();
+			}
+		});
+		t.start();
+	}
+	
+	public void CircleSpinRightClose() {
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				System.out.println("Spin right");
+				drone.getCommandManager().spinRight(10).doFor(30).hover();
+				//Hover();
+			}
+		});
+		t.start();
+	}
+	
+	public void CircleSpinLeftClose() {
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				System.out.println("Spin right");
+				drone.getCommandManager().spinLeft(10).doFor(30).hover();
 				//Hover();
 			}
 		});
@@ -61,7 +83,7 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Forward");
-				drone.getCommandManager().forward(60).doFor(500).backward(30).doFor(200).hover();
+				drone.getCommandManager().forward(20).doFor(800).backward(20).doFor(200).hover();
 				//Hover();
 			}
 		});

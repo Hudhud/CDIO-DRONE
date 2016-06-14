@@ -1,7 +1,11 @@
 package de.yadrone.apps.paperchase;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
+
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
@@ -22,9 +26,10 @@ public class QRCodeScanner implements ImageListener
 	
 	private Result scanResult;
 	private Result[] multiScanResult;
-	private Positioning positioning = new Positioning();
 	
 	private long imageCount = 0;
+	private QRCodeScan qr = new QRCodeScan();
+	byte[] pixel = new byte[16];
 	
 	public void imageUpdated(BufferedImage image)
 	{
@@ -33,10 +38,23 @@ public class QRCodeScanner implements ImageListener
 			}
 		
 		// try to detect QR code
-		LuminanceSource source = new BufferedImageLuminanceSource(image);
-		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+//		LuminanceSource source = new BufferedImageLuminanceSource(image);
+//		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
-		readMultiple(bitmap);
+		//readMultiple(bitmap);
+		findQRCodes(image);
+	}
+	
+	private void findQRCodes(BufferedImage image){
+		pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+		Mat frame = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
+		frame.put(0, 0, pixel);		
+
+		try {
+			qr.findQRCodes(frame);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void readMultiple(BinaryBitmap bitmap){

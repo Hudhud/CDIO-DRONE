@@ -82,7 +82,15 @@ public class CircleDetection implements ImageListener{
 
 			}
 			
-			margin = (int) (60/(distanceToObject/1000));
+			if(distanceToObject > 3000){
+				margin = (int) (20/(distanceToObject/1000));
+			} else
+			
+			if(distanceToObject > 2000){
+			margin = (int) (40/(distanceToObject/1000));
+			} else
+				margin = (int) (55/(distanceToObject/1000));
+			
 			
 
 			if(frame.height()/2 + margin < pt.y){
@@ -92,11 +100,14 @@ public class CircleDetection implements ImageListener{
 				commander.CircleUp();
 			}
 			else if(frame.width()/2+margin < pt.x){
+				if(distanceToObject > 3000)
 				commander.CircleSpinRight();
-
+				else commander.CircleSpinRightClose();
 			}
 			else if(frame.width()/2-margin > pt.x){
+				if(distanceToObject > 3000)
 				commander.CircleSpinLeft();
+				else commander.CircleSpinLeftClose();
 			}
 
 			else if(frame.width()/2+margin > pt.x && frame.width()/2-margin<pt.x){

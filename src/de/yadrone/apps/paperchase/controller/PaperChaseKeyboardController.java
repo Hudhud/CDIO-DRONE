@@ -45,7 +45,7 @@ public class PaperChaseKeyboardController extends PaperChaseAbstractController
 	};
 
 	@Override
-	public void onTags(Result[] result, float orientation) {
+	public void onTags(Result[] result, double[] orientation) {
 		// TODO Auto-generated method stub
 		
 	}
