@@ -33,6 +33,7 @@ public class PaperChase
 		drone.start();
 		drone.getCommandManager().setVideoChannel(VideoChannel.HORI);
 		drone.getCommandManager().setVideoCodec(VideoCodec.H264_360P);
+	//	drone.getCommandManager().setVideoCodec(VideoCodec.H264_720P);
 		PaperChaseGUI gui = new PaperChaseGUI(drone, this);
 		
 		// keyboard controller is always enabled and cannot be disabled (for safety reasons)

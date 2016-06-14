@@ -1,7 +1,11 @@
 package de.yadrone.apps.paperchase;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
+
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
@@ -24,6 +28,8 @@ public class QRCodeScanner implements ImageListener
 	private Result[] multiScanResult;
 	
 	private long imageCount = 0;
+	private QRCodeScan qr = new QRCodeScan();
+	byte[] pixel = new byte[16];
 	
 	public void imageUpdated(BufferedImage image)
 	{
@@ -32,19 +38,32 @@ public class QRCodeScanner implements ImageListener
 			}
 		
 		// try to detect QR code
-		LuminanceSource source = new BufferedImageLuminanceSource(image);
-		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+//		LuminanceSource source = new BufferedImageLuminanceSource(image);
+//		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
-		readMultiple(bitmap);
+		//readMultiple(bitmap);
+		findQRCodes(image);
+	}
+	
+	private void findQRCodes(BufferedImage image){
+		pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+		Mat frame = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
+		frame.put(0, 0, pixel);		
+
+		try {
+			qr.findQRCodes(frame);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void readMultiple(BinaryBitmap bitmap){
 		QRCodeMultiReader multiReader = new QRCodeMultiReader();
 
-		double theta = Double.NaN;
+		//double theta = Double.NaN;
 		try
 		{
-//			System.out.println("STARTING TO READ QR");
+			//System.out.println("STARTING TO READ QR");
 			multiScanResult = multiReader.decodeMultiple(bitmap);
 			double[] thetas = new double[multiScanResult.length];
 					
@@ -53,16 +72,57 @@ public class QRCodeScanner implements ImageListener
 			ResultPoint[] points = multiScanResult[i].getResultPoints();
 			ResultPoint a = points[1]; // top-left
 			ResultPoint b = points[2]; // top-right
+			ResultPoint c = points[0]; //bottom-left
 			
-			//ResultPoint c = points[3];//bottom left
 			System.out.println("TOP LEFT X = " + a.getX() + " TOP LEFT Y = " + a.getY());
 			System.out.println("TOP RIGHT X = " + b.getX() + " TOP RIGHT Y = " + b.getY());
+			System.out.println("BOTTOM LEFT X = " + c.getX() + " BOTTOM LEFT Y = " + c.getY());
+			
 			//System.out.println("BOTTOM LEFT X = " + c.getX() + " BOTTOM LEFT Y = " + c.getY());
 			// Find the degree of the rotation (needed e.g. for auto control)
 			System.out.println("DISTANCE BETWEEN TOP LEFT AND TOP RIGHT = " + ResultPoint.distance(a, b));
-			float pixel = ResultPoint.distance(a, b);
-			double distanceToObject = 4.45 * 110 * 360 / (pixel * 3.17);
+			float distanceAB = ResultPoint.distance(a, b);
+			float distanceAC = ResultPoint.distance(a, c);
+			float distanceBC = ResultPoint.distance(b, c);
+			double distanceToObject = 4.45 * 150 * 720 / (distanceAC * 3.17);
+//			double distanceToA = 4.45 * 150 * 360 / (distanceAC * 3.17);
+//			double distanceToB = 4.45 * 150 * 360 / (distanceBC * 3.17);
 			System.out.println("DISTANCE IN MM = " + distanceToObject);
+			System.out.println("DISTANCE AB PIXEL" + distanceAB);
+			System.out.println("DISTANCE AC PIXEL = " + distanceAC);
+			System.out.println("DISTANCE BC PIXEL = " + distanceBC);
+			
+			int margin = 5;
+			float difference;
+			if(distanceAB > distanceAC){
+				difference = distanceAB - distanceAC;
+				System.out.println();
+			} else {
+				difference = distanceAC - distanceAB;
+			}
+			
+			if(difference <= margin){
+				//centered
+			}
+			
+			//if(difference)
+			
+			if(distanceAB+margin >= distanceAC && distanceAC+margin >= distanceAB){
+				//centered
+				
+				System.out.println("QR CENTERED");
+			}
+			
+			if(distanceAC+margin > distanceAB){
+				//left
+				System.out.println("QR LEFT");
+			}
+			
+			if(distanceAC+margin < distanceAB){
+				//right
+				System.out.println("QR RIGHT");
+			}
+			
 			double z = Math.abs(a.getX() - b.getX());
 			double x = Math.abs(a.getY() - b.getY());
 			thetas[i] = Math.atan(x / z); // degree in rad (+- PI/2)
@@ -82,6 +142,13 @@ public class QRCodeScanner implements ImageListener
 				thetas[i] = 360 - thetas[i];
 			}
 			}
+			
+			// inform all listener
+			for (int i=0; i < listener.size(); i++)
+			{
+				listener.get(i).onTags(multiScanResult, thetas);
+			}
+			
 		}
 		catch (ReaderException e) 
 		{
@@ -89,11 +156,7 @@ public class QRCodeScanner implements ImageListener
 			multiScanResult = null;
 		}
 			
-		// inform all listener
-		for (int i=0; i < listener.size(); i++)
-		{
-			listener.get(i).onTags(multiScanResult, (float)theta);
-		}
+		
 	}
 	
 	private void readSingle(BinaryBitmap bitmap){

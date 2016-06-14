@@ -22,6 +22,9 @@ public class PaperChaseAutoController extends PaperChaseAbstractController imple
 	private Result tag;
 	private float tagOrientation;
 	
+	private Result[] tags;
+	private double[] tagOrientations;
+	
 	public PaperChaseAutoController(IARDrone drone)
 	{
 		super(drone);
@@ -184,9 +187,14 @@ public class PaperChaseAutoController extends PaperChaseAbstractController imple
 	}
 
 	@Override
-	public void onTags(Result[] result, float orientation) {
-		// TODO Auto-generated method stub
+	public void onTags(Result[] result, double[] orientation) {
+		if (result == null) // ToDo: do not call if no tag is present
+			return;
 		
+		System.out.println("PaperChaseAutoController: Tags found");
+
+		tags = result;
+		tagOrientations = orientation;
 	}
 	
 	
