@@ -36,96 +36,99 @@ public class QRCodeScanner implements ImageListener
 	private ArrayList<QRCode> qrCodes;
 	private DroneCommander commander;
 	private BufferedImage qrImage;
-	
-	
-	public QRCodeScanner(DroneCommander commander){
+	private StateController state;
+
+	public QRCodeScanner(DroneCommander commander, StateController state){
 		this.commander = commander;
+		this.state = state;
 	}
-	
+
 	private Positioning positioning = new Positioning();
 
 
 	public void imageUpdated(BufferedImage image)
 	{
-		
+
 
 		// try to detect QR code
 		//		LuminanceSource source = new BufferedImageLuminanceSource(image);
 		//		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
 		//readMultiple(bitmap);
-		findQRCodes(image);
-		setQrImage(qr.getQrImage());
-		
-		ListIterator<QRCode> iterator = qrCodes.listIterator();
-		while(iterator.hasNext()){
-			
-			//Her kan i få fat i QR koderne
-			QRCode qrCode = iterator.next();
-			
-			
-			//setQrImage(qrCode.getQRimage());
-			double distanceAC = qrCode.getDistanceAC();
-			double distanceBD = qrCode.getDistanceBD();
-			double distanceAB = qrCode.getDistanceAB();
-			Point[] corners = qrCode.getCorners();
-			
-			double centerX = distanceAB/2 + qrCode.getCorners()[0].x;
-			double centerY = distanceAC/2+ qrCode.getCorners()[0].y;
-			
-			int margin = 5;
-			double difference;
-			if(distanceAC > distanceBD){
-				difference = distanceAC - distanceBD;
-			} else {
-				difference = distanceBD - distanceAC;
-			}
+//		if(state.isReady()){
+			findQRCodes(image);
+			setQrImage(qr.getQrImage());
 
-			if(difference < margin){
-				int marginSpin = margin*5;
-				//CENTERED
-				System.out.println("QR CENTERED");
-				if(centerY < image.getHeight()/2-marginSpin) {
-					System.out.println("UP");
-				} else if(centerY > image.getHeight()/2+marginSpin) {
-					System.out.println("DOWN");
+			ListIterator<QRCode> iterator = qrCodes.listIterator();
+			while(iterator.hasNext()){
+
+				//Her kan i få fat i QR koderne
+				QRCode qrCode = iterator.next();
+
+
+				//setQrImage(qrCode.getQRimage());
+				double distanceAC = qrCode.getDistanceAC();
+				double distanceBD = qrCode.getDistanceBD();
+				double distanceAB = qrCode.getDistanceAB();
+				Point[] corners = qrCode.getCorners();
+
+				double centerX = distanceAB/2 + qrCode.getCorners()[0].x;
+				double centerY = distanceAC/2+ qrCode.getCorners()[0].y;
+
+				int margin = 5;
+				double difference;
+				if(distanceAC > distanceBD){
+					difference = distanceAC - distanceBD;
+				} else {
+					difference = distanceBD - distanceAC;
 				}
-				 if(centerX < image.getWidth()/2-marginSpin) {
-					commander.SpinLeftQR();
-				} else if(centerX > image.getWidth()/2+marginSpin) {
-					commander.SpinRightQR();
+
+				if(difference < margin){
+					int marginSpin = margin*5;
+					//CENTERED
+					System.out.println("QR CENTERED");
+					if(centerY < image.getHeight()/2-marginSpin) {
+						System.out.println("UP");
+					} else if(centerY > image.getHeight()/2+marginSpin) {
+						System.out.println("DOWN");
+					}
+					if(centerX < image.getWidth()/2-marginSpin) {
+						commander.SpinLeftQR();
+					} else if(centerX > image.getWidth()/2+marginSpin) {
+						commander.SpinRightQR();
+					}
+				} 
+
+				else if(distanceAC+margin > distanceBD){
+					//QR LEFT
+					commander.MoveRightQR();
 				}
-			} 
-			
-			else if(distanceAC+margin > distanceBD){
-				//QR LEFT
-				commander.MoveRightQR();
+				else if(distanceBD+margin > distanceAC){
+					//QR RIGHT
+					commander.MoveLeftQR();
+				}
+
+
+				double[] distances = new double[qrCodes.size()];
+				String[] qrNames = new String[qrCodes.size()];
+
+				for(int i = 0; iterator.hasNext(); i++){
+					//Her kan i fï¿½ fat i QR koderne
+					qrCode = iterator.next();
+
+					qrNames[i] = qrCode.getCode();
+
+					//hent data fra deres getMetoder
+					distances[i] = qrCode.getDistance();
+					//do something
+
+				}
+
+				positioning.calculatePosition(qrNames, distances);
 			}
-			else if(distanceBD+margin > distanceAC){
-				//QR RIGHT
-				commander.MoveLeftQR();
-			}
-			
-			
-		double[] distances = new double[qrCodes.size()];
-		String[] qrNames = new String[qrCodes.size()];
 		
-		for(int i = 0; iterator.hasNext(); i++){
-			//Her kan i fï¿½ fat i QR koderne
-			qrCode = iterator.next();
 
-			qrNames[i] = qrCode.getCode();
-			
-			//hent data fra deres getMetoder
-			distances[i] = qrCode.getDistance();
-			//do something
-
-		}
-
-		positioning.calculatePosition(qrNames, distances);
-		}
 	}
-
 	private void findQRCodes(BufferedImage image){
 		pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 		Mat frame = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
@@ -194,13 +197,13 @@ public class QRCodeScanner implements ImageListener
 		// inform all listener
 		for (int i=0; i < listener.size(); i++)
 		{
-		//	listener.get(i).onTags(multiScanResult, (float)theta);
+			//	listener.get(i).onTags(multiScanResult, (float)theta);
 
 			listener.get(i).onTags(multiScanResult, thetas);
 		}
 
 		if(multiScanResult.length >= 3) {
-		//	positioning.calculatePosition(multiScanResult);;
+			//	positioning.calculatePosition(multiScanResult);;
 		} else if(multiScanResult.length >= 2) {
 		}
 	}
@@ -270,6 +273,6 @@ public class QRCodeScanner implements ImageListener
 	public void setQrImage(BufferedImage qrImage) {
 		this.qrImage = qrImage;
 	}
-	
-	
+
+
 }

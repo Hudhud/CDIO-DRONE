@@ -64,7 +64,7 @@ public class QRCodeScan {
 			MatOfInt4 hierarchy = new MatOfInt4();
 
 			Imgproc.cvtColor(newImage, grey, Imgproc.COLOR_BGR2GRAY);
-			Imgproc.equalizeHist(grey, grey);
+//			Imgproc.equalizeHist(grey, grey);
 			
 			Imgproc.Canny(grey, grey, 70, 210, 3, false);
 			Imgproc.findContours(grey, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);

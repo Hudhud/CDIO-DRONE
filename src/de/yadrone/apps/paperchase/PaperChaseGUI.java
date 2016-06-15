@@ -11,6 +11,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.ScrollPane;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -18,6 +19,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.awt.print.Paper;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,6 +29,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import com.google.zxing.Result;
@@ -70,6 +73,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 	private JPanel container;
 	private JButton startknap;
 	private int batterypercentage;
+	private JScrollPane jsp = new JScrollPane();
 	
 	private Timer timer = new Timer();
 	private long gameStartTimestamp = System.currentTimeMillis();
@@ -81,12 +85,11 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 
 	public PaperChaseGUI(final IARDrone drone, PaperChase main, QRCodeScanner scanner)
 	{
-		super("YADrone Paper Chase");
+		super("GRUPPE 14");
 
 		this.main = main;
 		this.drone = drone;
 		this.scanner = scanner;
-		createMenuBar();
 		
 		batteryListener();
 		
@@ -128,18 +131,21 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 			public void controlStateChanged(ControlState state) {  }
 		});
 		
+		
+		
 		container = new JPanel();
 		container.setLayout(new GridLayout(1,2));
 		container.add(videoPanel);
 		container.add(qrPanel);
 		
-		this.add(container);
-
-		pack();
-		
-
 		createStartKnap();
-	}
+
+		container.add(jsp);
+		
+		this.add(container);
+		
+		pack();
+			}
 	
 	private JPanel createQRPanel() {
 		 qrPanel = new JPanel(){
@@ -179,37 +185,18 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 	});
 	}
 
-	private void createMenuBar()
-	{
-		JMenu options = new JMenu("Options");
-
-		final JCheckBoxMenuItem autoControlMenuItem = new JCheckBoxMenuItem("Auto-Control (experimental)");
-		autoControlMenuItem.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e)
-			{
-				main.enableAutoControl(autoControlMenuItem.isSelected());
-			}
-		});
-
-		options.add(autoControlMenuItem);
-
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.add(options);
-
-		setJMenuBar(menuBar);
-	}
+	
 	
 	private void createStartKnap(){
-		startknap = new JButton("start");
+		startknap = new JButton("Start");
 		startknap.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) 
 			{
 				Thread t = new Thread(new Runnable() {
 					public void run() {
-						drone.getCommandManager().flatTrim().doFor(100);
 						drone.getCommandManager().takeOff().doFor(5000);
-						drone.getCommandManager().hover().doFor(2000);
-						drone.getCommandManager().up(60).doFor(900);
+//						drone.getCommandManager().hover().doFor(2000);
+//						drone.getCommandManager().up(60).doFor(900);
 						drone.getCommandManager().hover();
 //						drone.getCommandManager().setCommand(new CalibrationCommand(Device.MAGNETOMETER)).doFor(6000);
 //						drone.getCommandManager().hover().doFor(1000);
@@ -236,9 +223,9 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 //				drone.getCommandManager().hover().doFor(15000);
 			}
 		});
-		startknap.setSize(100, 100);
+		startknap.setBounds(100, 100, 1000, 500);;
 		startknap.setVisible(true);
-		videoPanel.add(startknap);
+		container.add(startknap);
 	}
 
 
@@ -257,84 +244,20 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 					// now draw the camera image
 					g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
 
-					// draw "Shreds to find"
-					g.setColor(Color.RED);
+					if(batterypercentage>50) {
+					g.setColor(Color.GREEN);
 					g.setFont(tagFont);
-				
-					g.drawString("Shreds to find", 10, 20);
-					g.drawString("Battery: "+batterypercentage+"%", 10, 80);
-					for (int i=0; i < qrToFind.length; i++)
-					{
-						if (qrFound[i])
-							g.setColor(Color.GREEN.darker());
-						else
-							g.setColor(Color.RED);
-						g.drawString(qrToFind[i], 30, 40 + (i*20));
 					}
-
+					else {
+						g.setColor(Color.RED);
+						g.setFont(tagFont);
+					}
+				
+					g.drawString("Battery: "+batterypercentage+"%", 0, 15);
+					
 					// draw tolerance field (rectangle)
 					g.setColor(Color.RED);
 
-					int imgCenterX = PaperChase.IMAGE_WIDTH / 2;
-					int imgCenterY = PaperChase.IMAGE_HEIGHT / 2;
-					int tolerance = PaperChase.TOLERANCE;
-
-					g.drawPolygon(new int[] {imgCenterX-tolerance, imgCenterX+tolerance, imgCenterX+tolerance, imgCenterX-tolerance}, 
-							new int[] {imgCenterY-tolerance, imgCenterY-tolerance, imgCenterY+tolerance, imgCenterY+tolerance}, 4);
-
-					// draw triangle if tag is visible
-					if (multiResult != null)
-					{
-						for(int i = 0; i < multiResult.length; i++){
-							ResultPoint[] points = multiResult[i].getResultPoints();
-							ResultPoint a = points[1]; // top-left
-							ResultPoint b = points[2]; // top-right
-							ResultPoint c = points[0]; // bottom-left
-							ResultPoint d = points.length == 4 ? points[3] : points[0]; // alignment point (bottom-right)
-
-							g.setColor(Color.GREEN);
-
-							g.drawPolygon(new int[] {(int)a.getX(),(int)b.getX(),(int)d.getX(),(int)c.getX()}, 
-									new int[] {(int)a.getY(),(int)b.getY(),(int)d.getY(),(int)c.getY()}, 4);
-
-							g.setColor(Color.RED);
-							g.setFont(tagFont);
-							g.drawString(multiResult[i].getText(), (int)a.getX(), (int)a.getY());
-							g.setColor(Color.MAGENTA);
-							g.drawString(orientations[i], (int)a.getX(), (int)a.getY() + 20);
-							System.out.println("Vinkel : " +orientations[i]);
-							if ((System.currentTimeMillis() - multiResult[i].getTimestamp()) > 1000)
-							{
-								multiResult = null;
-							}
-						}
-					}
-					// draw "Congrats" if all tags have been detected
-					if (gameOver)
-					{
-						String str = "Congratulation !";
-
-						g.setColor(Color.GREEN.darker());
-						g.setFont(gameOverFont);
-
-						FontMetrics metrics = g.getFontMetrics(gameOverFont);
-						int hgt = metrics.getHeight();
-						int adv = metrics.stringWidth(str);
-
-						g.drawString(str, (getWidth() / 2) - (adv / 2), (getHeight() / 2) - (hgt / 2) - 50); // draw text centered
-					}
-
-					// draw the time
-					g.setColor(Color.RED);
-					g.setFont(timeFont);
-					g.drawString(gameTime, getWidth() - 50, 20);
-				}
-				else
-				{
-					// draw "Waiting for video"
-					g.setColor(Color.RED);
-					g.setFont(tagFont);
-					g.drawString("Waiting for Video ...", 10, 20);
 				}
 			}
 		}; 

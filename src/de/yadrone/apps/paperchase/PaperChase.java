@@ -53,7 +53,7 @@ public class PaperChase
 		
 		commander = new DroneCommander(drone);
 		
-		scanner = new QRCodeScanner(commander);
+		scanner = new QRCodeScanner(commander, state);
 		PaperChaseGUI gui = new PaperChaseGUI(drone, this, scanner);
 //		scanner.addListener(gui);
 		drone.getCommandManager().setMaxVideoBitrate(4000);
@@ -67,8 +67,7 @@ public class PaperChase
 		CircleDetection objectdetection = new CircleDetection(state, commander);
 		drone.getVideoManager().addImageListener(objectdetection);
 		}}; 
-		t.start();
-		
+//		t.start();
 		
 		
 		Thread u = new Thread(){
@@ -76,9 +75,6 @@ public class PaperChase
 			drone.getVideoManager().addImageListener(scanner);
 		}}; 
 		u.start();
-		
-			
-		
 		
 		}
 	}
