@@ -90,7 +90,7 @@ public class QRCodeScanner implements ImageListener
 				} else if(centerY > image.getHeight()/2+marginSpin) {
 					System.out.println("DOWN");
 				}
-				if(centerX < image.getWidth()/2-marginSpin) {
+				 if(centerX < image.getWidth()/2-marginSpin) {
 					commander.SpinLeftQR();
 				} else if(centerX > image.getWidth()/2+marginSpin) {
 					commander.SpinRightQR();

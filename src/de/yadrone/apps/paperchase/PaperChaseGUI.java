@@ -9,6 +9,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -66,6 +67,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 
 	private JPanel videoPanel;
 	private JPanel qrPanel;
+	private JPanel container;
 	private JButton startknap;
 	private int batterypercentage;
 	
@@ -100,7 +102,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 		});
 
 		setLayout(new GridBagLayout());
-
+		
 		add(createVideoPanel(), new GridBagConstraints(0, 0, 1, 2, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0));
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill =  GridBagConstraints.BOTH;
@@ -126,7 +128,12 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 			public void controlStateChanged(ControlState state) {  }
 		});
 		
+		container = new JPanel();
+		container.setLayout(new GridLayout(1,2));
+		container.add(videoPanel);
+		container.add(qrPanel);
 		
+		this.add(container);
 
 		pack();
 		
@@ -141,17 +148,17 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 		{
 			qrImage = scanner.getQrImage();
 			if (qrImage != null){
-				g.drawImage(qrImage, 0, 0, 640, 360, null);
+				g.drawImage(qrImage, 0, 0, PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2, null);
 			}
 				
 		}
 				
 		};
 //		
-		qrPanel.setSize(640, 360);
-		qrPanel.setMinimumSize(new Dimension(640, 360));
-		qrPanel.setPreferredSize(new Dimension(640, 360));
-		qrPanel.setMaximumSize(new Dimension(640, 360));
+		qrPanel.setSize(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2);
+		qrPanel.setMinimumSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
+		qrPanel.setPreferredSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
+		qrPanel.setMaximumSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
 		
 		return qrPanel;
 	}

@@ -45,10 +45,6 @@ public class CircleDetection implements ImageListener{
 	}
 	public void imageUpdated(final BufferedImage image)
 	{
-				if ((++imageCount % 2) == 0){
-					return;
-				}
-
 		if(state.isReady()){
 		
 		pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();

@@ -12,8 +12,8 @@ import de.yadrone.base.command.VideoCodec;
 
 public class PaperChase 
 {
-	public final static int IMAGE_WIDTH = 1280*2; // 640 or 1280
-	public final static int IMAGE_HEIGHT = 720*2; // 360 or 720
+	public final static int IMAGE_WIDTH = 2560; // 640 or 1280
+	public final static int IMAGE_HEIGHT = 1440; // 360 or 720
 	
 	public final static int TOLERANCE = 80;
 	
