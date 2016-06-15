@@ -41,6 +41,9 @@ public class QRCodeScanner implements ImageListener
 	public QRCodeScanner(DroneCommander commander){
 		this.commander = commander;
 	}
+	
+	private Positioning positioning = new Positioning();
+
 
 	public void imageUpdated(BufferedImage image)
 	{
@@ -57,8 +60,6 @@ public class QRCodeScanner implements ImageListener
 		setQrImage(qr.getQrImage());
 		
 		ListIterator<QRCode> iterator = qrCodes.listIterator();
-		qrCodes.size();
-		int i = 0;
 		while(iterator.hasNext()){
 			
 			//Her kan i få fat i QR koderne
@@ -108,9 +109,23 @@ public class QRCodeScanner implements ImageListener
 			}
 			
 			
+		double[] distances = new double[qrCodes.size()];
+		String[] qrNames = new String[qrCodes.size()];
+		
+		for(int i = 0; iterator.hasNext(); i++){
+			//Her kan i fï¿½ fat i QR koderne
+			qrCode = iterator.next();
+
+			qrNames[i] = qrCode.getCode();
+			
+			//hent data fra deres getMetoder
+			distances[i] = qrCode.getDistance();
+			//do something
 
 		}
 
+		positioning.calculatePosition(qrNames, distances);
+		}
 	}
 
 	private void findQRCodes(BufferedImage image){
@@ -129,11 +144,13 @@ public class QRCodeScanner implements ImageListener
 		QRCodeMultiReader multiReader = new QRCodeMultiReader();
 
 		double theta = Double.NaN;
+		double[] thetas = null;
 		try
 		{
 			//			System.out.println("STARTING TO READ QR");
 			multiScanResult = multiReader.decodeMultiple(bitmap);
-			double[] thetas = new double[multiScanResult.length];
+			//double[] thetas = new double[multiScanResult.length];
+			thetas = new double[multiScanResult.length];
 
 			for(int i = 0; i < multiScanResult.length; i++){
 
@@ -180,6 +197,8 @@ public class QRCodeScanner implements ImageListener
 		for (int i=0; i < listener.size(); i++)
 		{
 		//	listener.get(i).onTags(multiScanResult, (float)theta);
+
+			listener.get(i).onTags(multiScanResult, thetas);
 		}
 
 		if(multiScanResult.length >= 3) {
