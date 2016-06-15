@@ -42,7 +42,6 @@ public class CircleDetection implements ImageListener{
 
 		this.state = state;
 		this.commander = commander;
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 	public void imageUpdated(final BufferedImage image)
 	{

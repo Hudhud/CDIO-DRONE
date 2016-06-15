@@ -1,5 +1,7 @@
 package de.yadrone.apps.paperchase;
 
+import org.opencv.core.Core;
+
 import de.yadrone.apps.paperchase.controller.PaperChaseAbstractController;
 import de.yadrone.apps.paperchase.controller.PaperChaseAutoController;
 import de.yadrone.apps.paperchase.controller.PaperChaseKeyboardController;
@@ -7,7 +9,6 @@ import de.yadrone.base.ARDrone;
 import de.yadrone.base.IARDrone;
 import de.yadrone.base.command.VideoChannel;
 import de.yadrone.base.command.VideoCodec;
-import de.yadrone.base.navdata.BatteryListener;
 
 public class PaperChase 
 {
@@ -25,6 +26,7 @@ public class PaperChase
 	public PaperChase()
 	{
 		
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		
 		drone = new ARDrone();
 		drone.getCommandManager().setMinAltitude(1000);
@@ -53,8 +55,11 @@ public class PaperChase
 		
 		scanner = new QRCodeScanner(commander);
 		PaperChaseGUI gui = new PaperChaseGUI(drone, this, scanner);
-		scanner.addListener(gui);
-		
+//		scanner.addListener(gui);
+		drone.getCommandManager().setMaxVideoBitrate(4000);
+		drone.getCommandManager().setVideoBitrate(4000);
+		drone.getCommandManager().setVideoCodecFps(30);
+		drone.getVideoManager().addImageListener(gui);
 		
 		if(state.isVideoReady()){
 		Thread t = new Thread(){
@@ -64,8 +69,17 @@ public class PaperChase
 		}}; 
 		t.start();
 		
-		drone.getVideoManager().addImageListener(gui);
-		drone.getVideoManager().addImageListener(scanner);
+		
+		
+		Thread u = new Thread(){
+		public void run(){
+			drone.getVideoManager().addImageListener(scanner);
+		}}; 
+		u.start();
+		
+			
+		
+		
 		}
 	}
 	

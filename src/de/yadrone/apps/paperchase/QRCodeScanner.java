@@ -47,9 +47,7 @@ public class QRCodeScanner implements ImageListener
 
 	public void imageUpdated(BufferedImage image)
 	{
-		if ((++imageCount % 2) == 0){
-			return;
-		}
+		
 
 		// try to detect QR code
 		//		LuminanceSource source = new BufferedImageLuminanceSource(image);
