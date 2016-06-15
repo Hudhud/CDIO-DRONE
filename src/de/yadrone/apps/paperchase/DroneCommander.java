@@ -100,6 +100,46 @@ public class DroneCommander {
 		});
 		t.start();
 	}
+	
+	public void MoveRightQR() {
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				System.out.println("Move Right");
+				drone.getCommandManager().goRight(20).doFor(30).hover();
+			}
+		});
+		t.start();
+	}
+	
+	public void MoveLeftQR() {
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				System.out.println("Move Left");
+				drone.getCommandManager().goLeft(20).doFor(30).hover();
+			}
+		});
+		t.start();
+	}
+	
+	public void SpinLeftQR() {
+		Thread t = new Thread(new Runnable() {
+				public void run() {
+					System.out.println("Spin Left");
+					drone.getCommandManager().spinLeft(20).doFor(30).hover();
+				}
+			});
+			t.start();
+		}
+	
+	public void SpinRightQR() {
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				System.out.println("Spin Right");
+				drone.getCommandManager().spinRight(20).doFor(30).hover();
+			}
+		});
+		t.start();
+	}
 
 	public void Hover() {
 		drone.getCommandManager().hover();

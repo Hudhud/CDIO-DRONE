@@ -6,10 +6,10 @@ import org.opencv.core.Point;
 
 public class QRCode {
 
-	private int top;
-	private int middle;
-	private int bottom;
-	private Point lastPoint;
+	private double distanceAC;
+	private double distanceBD;
+	private double distanceAB;
+	private Point[] corners;
 	private double x;
 	private double y;
 	private String message;
@@ -43,42 +43,13 @@ public class QRCode {
 		return y;
 	}
 	
-	
-	public void setTop(int i){
-		top = i;
-	}
-	public void setMid(int i){
-		middle = i;
-	}
-	public void setBot(int i)
-	{
-		bottom = i;
-	}
-	public void setLP(Point p){
-		lastPoint = p;
-	}
-	
-	public int getTop(){
-		return top;
-	}
-	public int getMid(){
-		return middle;
-	}
-	public int getBot(){
-		return bottom;
-	}
-	public Point getLP(){
-		return lastPoint;
-	}
 	public Point getCoordinates() {
 		return coordinates;
 	}
 	
-	public QRCode(int top, int middle , int bottom){
-		this.top = top;
-		this.middle = middle;
-		this.bottom = bottom;
+	public QRCode(){
 	}
+	
 	public void setQRimg(BufferedImage qRimg) {
 		qrImage = qRimg;
 	}
@@ -166,5 +137,30 @@ public class QRCode {
 			default:
 			break;	
 		}
+	}
+
+	public double getDistanceBD() {
+		return distanceBD;
+	}
+	public void setDistanceBD(double distanceBD) {
+		this.distanceBD = distanceBD;
+	}
+	public double getDistanceAC() {
+		return distanceAC;
+	}
+	public void setDistanceAC(double distanceAC) {
+		this.distanceAC = distanceAC;
+	}
+	public double getDistanceAB() {
+		return distanceAB;
+	}
+	public void setDistanceAB(double distanceAB) {
+		this.distanceAB = distanceAB;
+	}
+	public Point[] getCorners() {
+		return corners;
+	}
+	public void setCorners(Point[] corners) {
+		this.corners = corners;
 	}
 }

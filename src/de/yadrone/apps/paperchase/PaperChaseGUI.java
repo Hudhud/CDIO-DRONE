@@ -1,6 +1,8 @@
 package de.yadrone.apps.paperchase;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -45,6 +47,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 	private IARDrone drone;
 	
 	private BufferedImage image = null;
+	private BufferedImage qrImage = null;
 	private Result result;
 	private Result[] multiResult;
 	private String orientation;
@@ -62,6 +65,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 	//
 
 	private JPanel videoPanel;
+	private JPanel qrPanel;
 	private JButton startknap;
 	private int batterypercentage;
 	
@@ -70,13 +74,16 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 	private String gameTime = "0:00";
 
 	private boolean gameOver = false;
+	
+	private QRCodeScanner scanner;
 
-	public PaperChaseGUI(final IARDrone drone, PaperChase main)
+	public PaperChaseGUI(final IARDrone drone, PaperChase main, QRCodeScanner scanner)
 	{
 		super("YADrone Paper Chase");
 
 		this.main = main;
 		this.drone = drone;
+		this.scanner = scanner;
 		createMenuBar();
 		
 		batteryListener();
@@ -95,7 +102,15 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 		setLayout(new GridBagLayout());
 
 		add(createVideoPanel(), new GridBagConstraints(0, 0, 1, 2, 1, 1, GridBagConstraints.FIRST_LINE_START, GridBagConstraints.BOTH, new Insets(0,0,0,0), 0, 0));
-
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill =  GridBagConstraints.BOTH;
+//		gbc.gridheight = 1000;
+//		gbc.gridwidth = 1000;
+//		gbc.weightx = 1;
+//		gbc.weighty = 1;
+//		gbc.gridx = 1;
+//		gbc.gridy = 1;
+		add(createQRPanel(), gbc);
 		// add listener to be notified once the drone takes off so that the game timer counter starts
 		drone.getNavDataManager().addStateListener(new StateListener() {
 
@@ -111,7 +126,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 			public void controlStateChanged(ControlState state) {  }
 		});
 		
-	
+		
 
 		pack();
 		
@@ -119,6 +134,28 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 		createStartKnap();
 	}
 	
+	private JPanel createQRPanel() {
+		 qrPanel = new JPanel(){
+	
+		public void paint(Graphics g)
+		{
+			qrImage = scanner.getQrImage();
+			if (qrImage != null){
+				g.drawImage(qrImage, 0, 0, 640, 360, null);
+			}
+				
+		}
+				
+		};
+//		
+		qrPanel.setSize(640, 360);
+		qrPanel.setMinimumSize(new Dimension(640, 360));
+		qrPanel.setPreferredSize(new Dimension(640, 360));
+		qrPanel.setMaximumSize(new Dimension(640, 360));
+		
+		return qrPanel;
+	}
+
 	private void batteryListener(){
 		drone.getNavDataManager().addBatteryListener(new BatteryListener() {
 
@@ -303,10 +340,10 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 			}
 		});
 
-		videoPanel.setSize(PaperChase.IMAGE_WIDTH, PaperChase.IMAGE_HEIGHT);
-		videoPanel.setMinimumSize(new Dimension(PaperChase.IMAGE_WIDTH, PaperChase.IMAGE_HEIGHT));
-		videoPanel.setPreferredSize(new Dimension(PaperChase.IMAGE_WIDTH, PaperChase.IMAGE_HEIGHT));
-		videoPanel.setMaximumSize(new Dimension(PaperChase.IMAGE_WIDTH, PaperChase.IMAGE_HEIGHT));
+		videoPanel.setSize(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2);
+		videoPanel.setMinimumSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
+		videoPanel.setPreferredSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
+		videoPanel.setMaximumSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
 
 		return videoPanel;
 	}
@@ -342,6 +379,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 			public void run()
 			{
 				videoPanel.repaint();
+				qrPanel.repaint();
 			}
 		});
 	}

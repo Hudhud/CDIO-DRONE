@@ -30,7 +30,7 @@ public class StateController {
 
 			public void attitudeUpdated(float pitch, float roll, float yaw)
 			{
-		    	System.out.println("Pitch: " + pitch + " Roll: " + roll + " Yaw: " + yaw);
+		    //	System.out.println("Pitch: " + pitch + " Roll: " + roll + " Yaw: " + yaw);
 			}
 
 			@Override

@@ -11,8 +11,8 @@ import de.yadrone.base.navdata.BatteryListener;
 
 public class PaperChase 
 {
-	public final static int IMAGE_WIDTH = 640; // 640 or 1280
-	public final static int IMAGE_HEIGHT = 360; // 360 or 720
+	public final static int IMAGE_WIDTH = 1280; // 640 or 1280
+	public final static int IMAGE_HEIGHT = 720; // 360 or 720
 	
 	public final static int TOLERANCE = 80;
 	
@@ -34,11 +34,13 @@ public class PaperChase
 		drone.getCommandManager().setVideoChannel(VideoChannel.HORI);
 		drone.getCommandManager().setVideoCodec(VideoCodec.H264_360P);
 	//	drone.getCommandManager().setVideoCodec(VideoCodec.H264_720P);
-		PaperChaseGUI gui = new PaperChaseGUI(drone, this);
+	
 		
 		// keyboard controller is always enabled and cannot be disabled (for safety reasons)
 		PaperChaseKeyboardController keyboardController = new PaperChaseKeyboardController(drone);
 		keyboardController.start();
+	
+		
 		
 		// auto controller is instantiated, but not started
 		autoController = new PaperChaseAutoController(drone);
@@ -46,10 +48,13 @@ public class PaperChase
 		//state controller
 		state = new StateController(drone);
 		
-		scanner = new QRCodeScanner();
-		scanner.addListener(gui);
 		
 		commander = new DroneCommander(drone);
+		
+		scanner = new QRCodeScanner(commander);
+		PaperChaseGUI gui = new PaperChaseGUI(drone, this, scanner);
+		scanner.addListener(gui);
+		
 		
 		if(state.isVideoReady()){
 		Thread t = new Thread(){
