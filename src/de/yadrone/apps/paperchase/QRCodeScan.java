@@ -169,7 +169,6 @@ public class QRCodeScan {
 					
 					if (result != " ") {
 						//qrImage = lort2img(qr_gray);
-						System.out.println("Idiooot!" + qrList.size());
 						distanceToQr = 4.45 * 400 * 720/ ((distance(pointList.get(i)[0], pointList.get(i)[3]))*3.17);
 						qrList.add(new QRCode());
 						Point[] corners = pointList.get(i);
