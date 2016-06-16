@@ -45,11 +45,11 @@ public class CircleDetection implements ImageListener{
 		this.commander = commander;
 	}
 	
-	public void imageUpdated(final BufferedImage image)
+	public void imageUpdated(BufferedImage image)
 	{
 		if(enabled){
+//			System.out.println("Circle Detection Activated");
 			if(state.isReady()){
-
 				pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 				Mat frame = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
 				Mat gray = new Mat();
@@ -58,7 +58,7 @@ public class CircleDetection implements ImageListener{
 				Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY );
 
 				Mat circles = new Mat();
-				Imgproc.HoughCircles(gray, circles, Imgproc.CV_HOUGH_GRADIENT, 1, gray.rows()/8, 225, 100, 35, 190);
+				Imgproc.HoughCircles(gray, circles, Imgproc.CV_HOUGH_GRADIENT, 1, gray.rows()/8, 225, 100, 0, 0);
 				if (circles.cols() > 0){
 
 					System.out.println("Circles found : " + circles.cols());
@@ -114,7 +114,7 @@ public class CircleDetection implements ImageListener{
 						}
 						else{
 							commander.GoThroughCircle(distanceToObject);
-							enabled = false;
+							//enabled = false;
 						}
 					}
 				}

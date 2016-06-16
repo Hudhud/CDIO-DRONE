@@ -39,6 +39,7 @@ public class QRCodeScanner implements ImageListener
 	private StateController state; 
 	private ArrayList<String> foundQR = new ArrayList<>();
 	private CircleDetection circle;
+	private boolean enabled = true;
 	
 	public QRCodeScanner(DroneCommander commander, StateController state, CircleDetection circle){
 		this.commander = commander;
@@ -58,6 +59,7 @@ public class QRCodeScanner implements ImageListener
 		//		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
 		//readMultiple(bitmap);
+		if(enabled){
 		if(state.isReady()){
 			findQRCodes(image);
 			setQrImage(qr.getQrImage());
@@ -99,8 +101,9 @@ public class QRCodeScanner implements ImageListener
 							commander.CircleForward();
 						} else{
 							commander.UptoCircle();
-							foundQR.add(qrCode.getCode());
+//							foundQR.add(qrCode.getCode());
 							circle.setEnabled(true);
+							enabled = false;
 						}
 
 					} else 
@@ -149,7 +152,7 @@ public class QRCodeScanner implements ImageListener
 				}	
 			}
 		}
-
+		}
 	}
 
 	private void findQRCodes(BufferedImage image){
