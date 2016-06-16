@@ -152,6 +152,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener
 	
 		public void paint(Graphics g)
 		{
+			if(scanner.getQrImage() != null)
 			qrImage = scanner.getQrImage();
 			if (qrImage != null){
 				g.drawImage(qrImage, 0, 0, PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2, null);
