@@ -38,10 +38,12 @@ public class QRCodeScanner implements ImageListener
 	private BufferedImage qrImage;
 	private StateController state; 
 	private ArrayList<String> foundQR = new ArrayList<>();
-
-	public QRCodeScanner(DroneCommander commander, StateController state){
+	private CircleDetection circle;
+	
+	public QRCodeScanner(DroneCommander commander, StateController state, CircleDetection circle){
 		this.commander = commander;
 		this.state = state;
+		this.circle = circle;
 	}
 
 	private Positioning positioning = new Positioning();
@@ -98,6 +100,7 @@ public class QRCodeScanner implements ImageListener
 						} else{
 							commander.UptoCircle();
 							foundQR.add(qrCode.getCode());
+							circle.setEnabled(true);
 						}
 
 					} else 

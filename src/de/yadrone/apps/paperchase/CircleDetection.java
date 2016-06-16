@@ -36,87 +36,91 @@ public class CircleDetection implements ImageListener{
 	StateController state;
 	int sleep = 40;
 	private DroneCommander commander;
-	
+	private boolean enabled = false;
+
 	public CircleDetection( StateController state, DroneCommander commander){
 		super();
 
 		this.state = state;
 		this.commander = commander;
 	}
+	
 	public void imageUpdated(final BufferedImage image)
 	{
-		if(state.isReady()){
-		
-		pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-		Mat frame = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
-		Mat gray = new Mat();
-		frame.put(0, 0, pixel);		
+		if(enabled){
+			if(state.isReady()){
 
-		Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY );
-		
-		Mat circles = new Mat();
-		Imgproc.HoughCircles(gray, circles, Imgproc.CV_HOUGH_GRADIENT, 1, gray.rows()/8, 225, 100, 35, 190);
-		if (circles.cols() > 0){
-			
-			System.out.println("Circles found : " + circles.cols());
-			for (int x = 0; x < circles.cols(); x++) 
-			{
-				double vCircle[] = circles.get(0,x);
+				pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+				Mat frame = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);
+				Mat gray = new Mat();
+				frame.put(0, 0, pixel);		
 
-				if (vCircle == null)
-					break;
+				Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY );
 
-				pt = new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
-				int radius = (int)Math.round(vCircle[2]);
-				System.out.println("Radius : " + radius);
-		
-				distanceToObject = 4.45 * 750 * frame.height()/ ((radius*2)*3.17);
-				time = (int)distanceToObject/3;
+				Mat circles = new Mat();
+				Imgproc.HoughCircles(gray, circles, Imgproc.CV_HOUGH_GRADIENT, 1, gray.rows()/8, 225, 100, 35, 190);
+				if (circles.cols() > 0){
 
-				System.out.println("Distance: " + distanceToObject + " Frame Middle: "+ frame.width()/2 + " Center of Circle: " + pt.x);
+					System.out.println("Circles found : " + circles.cols());
+					for (int x = 0; x < circles.cols(); x++) 
+					{
+						double vCircle[] = circles.get(0,x);
 
-			}
-			
-			if(distanceToObject > 3000){
-				margin = (int) (20/(distanceToObject/1000));
-			} else
-			
-			if(distanceToObject > 2000){
-			margin = (int) (40/(distanceToObject/1000));
-			} else
-				margin = (int) (55/(distanceToObject/1000));
-			
-			
+						if (vCircle == null)
+							break;
 
-			if(frame.height()/2 + margin < pt.y){
-				commander.CircleDown();
-			}
-			else if(frame.height()/2 - margin > pt.y){
-				commander.CircleUp();
-			}
-			else if(frame.width()/2+margin < pt.x){
-				if(distanceToObject > 3000)
-				commander.CircleSpinRight();
-				else commander.CircleSpinRightClose();
-			}
-			else if(frame.width()/2-margin > pt.x){
-				if(distanceToObject > 3000)
-				commander.CircleSpinLeft();
-				else commander.CircleSpinLeftClose();
-			}
+						pt = new Point(Math.round(vCircle[0]), Math.round(vCircle[1]));
+						int radius = (int)Math.round(vCircle[2]);
+						System.out.println("Radius : " + radius);
 
-			else if(frame.width()/2+margin > pt.x && frame.width()/2-margin<pt.x){
-				if(distanceToObject > 2000){
-					commander.CircleForward();
+						distanceToObject = 4.45 * 750 * frame.height()/ ((radius*2)*3.17);
+						time = (int)distanceToObject/3;
+
+						System.out.println("Distance: " + distanceToObject + " Frame Middle: "+ frame.width()/2 + " Center of Circle: " + pt.x);
+
+					}
+
+					if(distanceToObject > 3000){
+						margin = (int) (20/(distanceToObject/1000));
+					} else
+
+						if(distanceToObject > 2000){
+							margin = (int) (40/(distanceToObject/1000));
+						} else
+							margin = (int) (55/(distanceToObject/1000));
+
+
+
+					if(frame.height()/2 + margin < pt.y){
+						commander.CircleDown();
+					}
+					else if(frame.height()/2 - margin > pt.y){
+						commander.CircleUp();
+					}
+					else if(frame.width()/2+margin < pt.x){
+						if(distanceToObject > 3000)
+							commander.CircleSpinRight();
+						else commander.CircleSpinRightClose();
+					}
+					else if(frame.width()/2-margin > pt.x){
+						if(distanceToObject > 3000)
+							commander.CircleSpinLeft();
+						else commander.CircleSpinLeftClose();
+					}
+
+					else if(frame.width()/2+margin > pt.x && frame.width()/2-margin<pt.x){
+						if(distanceToObject > 2000){
+							commander.CircleForward();
+						}
+						else{
+							commander.GoThroughCircle(distanceToObject);
+							enabled = false;
+						}
+					}
 				}
-				else{
-				commander.GoThroughCircle(distanceToObject);
-				}
-			}
 			}
 		}
 	}
-
 
 	public Double getDistToObject() {
 		return distanceToObject;
@@ -137,6 +141,12 @@ public class CircleDetection implements ImageListener{
 		img.getRaster().setDataElements(0, 0, mat.cols(), mat.rows(), data);
 
 		return img;	
+	}
+	public boolean isEnabled() {
+		return enabled;
+	}
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 }
