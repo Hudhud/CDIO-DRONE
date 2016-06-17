@@ -27,7 +27,7 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("UP to circle");
-				drone.getCommandManager().up(20).doFor(200).hover();
+				drone.getCommandManager().up(20).doFor(500).hover();
 			//	Hover();
 			}
 		});
@@ -105,7 +105,7 @@ public class DroneCommander {
 		final int doFor = (int) distance+500;
 		Thread t = new Thread(new Runnable() {
 			public void run() {
-				System.out.println("Go Through Circle");
+				System.out.println("Go Through Circle " +doFor);
 				drone.getCommandManager().forward(20).doFor(doFor).backward(20).doFor(200).hover();
 			}
 		});

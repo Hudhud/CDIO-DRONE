@@ -114,7 +114,7 @@ public class CircleDetection implements ImageListener{
 						}
 						else{
 							commander.GoThroughCircle(distanceToObject);
-							//enabled = false;
+							enabled = false;
 						}
 					}
 				}

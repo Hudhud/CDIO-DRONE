@@ -12,8 +12,8 @@ import de.yadrone.base.command.VideoCodec;
 
 public class PaperChase 
 {
-	public final static int IMAGE_WIDTH = 2560; // 640 or 1280
-	public final static int IMAGE_HEIGHT = 1440; // 360 or 720
+	public final static int IMAGE_WIDTH = 1280; // 640 or 1280
+	public final static int IMAGE_HEIGHT = 720; // 360 or 720
 	
 	public final static int TOLERANCE = 80;
 	
@@ -34,8 +34,8 @@ public class PaperChase
 		drone.getCommandManager().setMaxVz(2000);
 		drone.start();
 		drone.getCommandManager().setVideoChannel(VideoChannel.HORI);
-//		drone.getCommandManager().setVideoCodec(VideoCodec.H264_360P);
-		drone.getCommandManager().setVideoCodec(VideoCodec.H264_720P);
+		drone.getCommandManager().setVideoCodec(VideoCodec.H264_360P);
+//		drone.getCommandManager().setVideoCodec(VideoCodec.H264_720P);
 	
 		
 		// keyboard controller is always enabled and cannot be disabled (for safety reasons)
@@ -76,7 +76,7 @@ public class PaperChase
 		public void run(){
 			drone.getVideoManager().addImageListener(scanner);
 		}}; 
-		u.start();
+//		u.start();
 		
 		}
 	}

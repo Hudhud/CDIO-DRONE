@@ -40,7 +40,7 @@ public class QRCodeScanner implements ImageListener
 	private ArrayList<String> foundQR = new ArrayList<>();
 	private CircleDetection circle;
 	private boolean enabled = true;
-	
+
 	public QRCodeScanner(DroneCommander commander, StateController state, CircleDetection circle){
 		this.commander = commander;
 		this.state = state;
@@ -59,7 +59,7 @@ public class QRCodeScanner implements ImageListener
 		//		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
 		//readMultiple(bitmap);
-		if(enabled){
+		//		if(enabled){
 		if(state.isReady()){
 			findQRCodes(image);
 			setQrImage(qr.getQrImage());
@@ -101,7 +101,7 @@ public class QRCodeScanner implements ImageListener
 							commander.CircleForward();
 						} else{
 							commander.UptoCircle();
-//							foundQR.add(qrCode.getCode());
+							//							foundQR.add(qrCode.getCode());
 							circle.setEnabled(true);
 							enabled = false;
 						}
@@ -112,10 +112,12 @@ public class QRCodeScanner implements ImageListener
 						//					} else if(centerY > image.getHeight()/2+marginSpin) {
 						//						System.out.println("DOWN");
 						//					}
-						if(centerX < image.getWidth()/2-marginSpin) {
-							commander.SpinLeftQR();
-						} else if(centerX > image.getWidth()/2+marginSpin) {
+						if(centerX > image.getWidth()/2-marginSpin) {
 							commander.SpinRightQR();
+
+						} else if(centerX < image.getWidth()/2+marginSpin) {
+							commander.SpinLeftQR();
+
 						}
 
 
@@ -152,8 +154,8 @@ public class QRCodeScanner implements ImageListener
 				}	
 			}
 		}
-		}
 	}
+	//	}
 
 	private void findQRCodes(BufferedImage image){
 		pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
