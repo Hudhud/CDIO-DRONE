@@ -376,7 +376,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 		if(action.equals("START")){
 			Thread t = new Thread(new Runnable() {
 				public void run() {
-					drone.getCommandManager().takeOff().doFor(5000);
+					drone.getCommandManager().takeOff();
 					//						drone.getCommandManager().hover().doFor(2000);
 					//						drone.getCommandManager().up(60).doFor(900);
 					drone.getCommandManager().hover();
