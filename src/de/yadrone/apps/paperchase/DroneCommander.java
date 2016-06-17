@@ -16,7 +16,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("UP");
-				drone.getCommandManager().up(20).doFor(30).hover();
+				drone.getCommandManager().up(20).doFor(30);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 			//	Hover();
 			}
 		});
@@ -27,7 +30,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("UP to circle");
-				drone.getCommandManager().up(20).doFor(500).hover();
+				drone.getCommandManager().up(20).doFor(500);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 			//	Hover();
 			}
 		});
@@ -38,7 +44,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Down");
-				drone.getCommandManager().down(20).doFor(30).hover();
+				drone.getCommandManager().down(20).doFor(30);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 				//Hover();
 			}
 		});
@@ -50,7 +59,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Spin Left");
-				drone.getCommandManager().spinLeft(30).doFor(30).hover();
+				drone.getCommandManager().spinLeft(30).doFor(30);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 				//Hover();
 			}
 		});
@@ -61,7 +73,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Spin right");
-				drone.getCommandManager().spinRight(30).doFor(30).hover();
+				drone.getCommandManager().spinRight(30).doFor(30);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 				//Hover();
 			}
 		});
@@ -72,7 +87,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Spin right");
-				drone.getCommandManager().spinRight(10).doFor(30).hover();
+				drone.getCommandManager().spinRight(10).doFor(30);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 				//Hover();
 			}
 		});
@@ -82,8 +100,11 @@ public class DroneCommander {
 	public void CircleSpinLeftClose() {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
-				System.out.println("Spin right");
-				drone.getCommandManager().spinLeft(10).doFor(30).hover();
+				System.out.println("Spin left");
+				drone.getCommandManager().spinLeft(10).doFor(30);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 				//Hover();
 			}
 		});
@@ -94,7 +115,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Forward");
-				drone.getCommandManager().forward(20).doFor(800).backward(20).doFor(200).hover();
+				drone.getCommandManager().forward(20).doFor(800).backward(20).doFor(200);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 				//Hover();
 			}
 		});
@@ -106,7 +130,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Go Through Circle " +doFor);
-				drone.getCommandManager().forward(20).doFor(doFor).backward(20).doFor(200).hover();
+				drone.getCommandManager().forward(20).doFor(doFor);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 			}
 		});
 		t.start();
@@ -116,7 +143,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Move Right");
-				drone.getCommandManager().goRight(10).doFor(30).hover();
+				drone.getCommandManager().goRight(10).doFor(30);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 			}
 		});
 		t.start();
@@ -126,7 +156,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Move Left");
-				drone.getCommandManager().goLeft(10).doFor(30).hover();
+				drone.getCommandManager().goLeft(10).doFor(30);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 			}
 		});
 		t.start();
@@ -136,7 +169,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 				public void run() {
 					System.out.println("Spin Left");
-					drone.getCommandManager().spinLeft(10).doFor(30).hover();
+					drone.getCommandManager().spinLeft(10).doFor(30);
+					Hover();
+					int active = Thread.activeCount();
+					System.out.println("Active threads: "+active);
 				}
 			});
 			t.start();
@@ -146,7 +182,10 @@ public class DroneCommander {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				System.out.println("Spin Right");
-				drone.getCommandManager().spinRight(10).doFor(30).hover();
+				drone.getCommandManager().spinRight(10).doFor(30);
+				Hover();
+				int active = Thread.activeCount();
+				System.out.println("Active threads: "+active);
 			}
 		});
 		t.start();

@@ -59,7 +59,7 @@ public class QRCodeScanner implements ImageListener
 		//		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
 		//readMultiple(bitmap);
-		//		if(enabled){
+				if(enabled){
 		if(state.isReady()){
 			findQRCodes(image);
 			setQrImage(qr.getQrImage());
@@ -155,7 +155,7 @@ public class QRCodeScanner implements ImageListener
 			}
 		}
 	}
-	//	}
+		}
 
 	private void findQRCodes(BufferedImage image){
 		pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();

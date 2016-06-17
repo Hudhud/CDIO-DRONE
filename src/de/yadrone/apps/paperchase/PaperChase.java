@@ -63,6 +63,7 @@ public class PaperChase
 		drone.getCommandManager().setVideoCodecFps(30);
 		drone.getVideoManager().addImageListener(gui);
 		
+		
 		if(state.isVideoReady()){
 		Thread t = new Thread(){
 		public void run(){
@@ -76,7 +77,7 @@ public class PaperChase
 		public void run(){
 			drone.getVideoManager().addImageListener(scanner);
 		}}; 
-//		u.start();
+		u.start();
 		
 		}
 	}

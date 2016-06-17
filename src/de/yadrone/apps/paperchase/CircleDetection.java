@@ -37,6 +37,7 @@ public class CircleDetection implements ImageListener{
 	int sleep = 40;
 	private DroneCommander commander;
 	private boolean enabled = false;
+	private int counter = 0;
 
 	public CircleDetection( StateController state, DroneCommander commander){
 		super();
@@ -47,8 +48,10 @@ public class CircleDetection implements ImageListener{
 	
 	public void imageUpdated(BufferedImage image)
 	{
+		counter++;
+		if(!(counter%3 == 0))
+			return;
 		if(enabled){
-//			System.out.println("Circle Detection Activated");
 			if(state.isReady()){
 				pixel = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 				Mat frame = new Mat(image.getHeight(), image.getWidth(), CvType.CV_8UC3);

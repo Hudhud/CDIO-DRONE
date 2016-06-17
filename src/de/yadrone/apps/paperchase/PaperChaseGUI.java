@@ -136,7 +136,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 
 
 		container = new JPanel();
-		container.setLayout(new GridLayout(2,1));
+		container.setLayout(new GridLayout(2,2));
 		container.add(videoPanel);
 		container.add(qrPanel);
 
@@ -403,6 +403,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 			t.start();
 		} else if(action.equals("STOP")){
 			drone.getCommandManager().landing();
+			System.exit(0);
 		}
 	}
 
