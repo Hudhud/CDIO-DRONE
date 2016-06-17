@@ -12,6 +12,9 @@ public class Positioning {
 
 	private static HashMap<String, Double[]> values;
 	private static int[] position = new int[2];
+	private static final int GRID_WIDTH = 10;
+	private static final int GRID_HEIGHT = 11;
+	private static int[] positionInGrid = new int[2];
 	private static final int WIDTH = 640;
 	private static final int HEIGHT = 360;
 	private static final double DIAGONAL_SIZE = Math.hypot(WIDTH, HEIGHT);
@@ -36,6 +39,16 @@ public class Positioning {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public int[] calculatePosition(ArrayList<QRCode> codes) {
+		String[] codeNames = new String[codes.size()];
+		double[] distances = new double[codes.size()];
+		for(int i = 0; i < codeNames.length; i++) {
+			codeNames[i] = codes.get(i).getCode();
+			distances[i] = codes.get(i).getDistance();
+		}
+		return calculatePosition(codeNames, distances);
 	}
 
 	public int[] calculatePosition(String[] qrNames, double[] distances) {
@@ -86,6 +99,8 @@ public class Positioning {
 		for(int i = 0; i < coords.length; i++) {
 			position[i] = (int)coords[i];
 		}
+		
+		positionInGrid[position[1]/100] = position[2]/100;
 		
 		System.out.println("POSITION (X,Y): " +position[0] + ", " + position[1]);
 		return position;
