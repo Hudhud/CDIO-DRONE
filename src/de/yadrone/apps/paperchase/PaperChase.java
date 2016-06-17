@@ -21,8 +21,8 @@ public class PaperChase
 	private PaperChaseAbstractController autoController;
 	private QRCodeScanner scanner = null;
 	private StateController state;
-	private DroneCommander commander;
 	private CircleDetection circle = null;
+	private Commander commander;
 	public PaperChase()
 	{
 		
@@ -51,10 +51,14 @@ public class PaperChase
 		state = new StateController(drone);
 		
 		
-		commander = new DroneCommander(drone);
-
+		//commander = new DroneCommander(drone);
+		commander = new Commander(drone);
+		commander.start();
 		circle = new CircleDetection(state, commander);
 		scanner = new QRCodeScanner(commander, state, circle);
+		
+//		circle = new CircleDetection(state, commander);
+//		scanner = new QRCodeScanner(commander, state, circle);
 		
 		PaperChaseGUI gui = new PaperChaseGUI(drone, this, scanner);
 //		scanner.addListener(gui);

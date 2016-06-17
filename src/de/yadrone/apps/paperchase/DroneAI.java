@@ -7,13 +7,13 @@ import de.yadrone.base.IARDrone;
 public class DroneAI {
 	
 	private IARDrone drone;
-	private DroneCommander commander;
+	private Commander commander;
 	private StateController state;
 	private ArrayList<QRCode> qrCodes;
 	private Positioning positioning;
 	private int[] startPosition;
 	
-	public DroneAI(IARDrone drone, DroneCommander commander, StateController state, QRCodeScanner scanner){
+	public DroneAI(IARDrone drone, Commander commander, StateController state, QRCodeScanner scanner){
 		this.drone = drone;
 		this.commander = commander;
 		this.state = state;

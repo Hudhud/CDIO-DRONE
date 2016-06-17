@@ -21,6 +21,7 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.multi.qrcode.QRCodeMultiReader;
 import com.google.zxing.qrcode.QRCodeReader;
 
+import de.yadrone.apps.paperchase.Commander.command;
 import de.yadrone.base.video.ImageListener;
 
 public class QRCodeScanner implements ImageListener
@@ -34,14 +35,15 @@ public class QRCodeScanner implements ImageListener
 	private QRCodeScan qr = new QRCodeScan();
 	byte[] pixel = new byte[16];
 	private ArrayList<QRCode> qrCodes;
-	private DroneCommander commander;
+	//private DroneCommander commander;
+	private Commander commander;
 	private BufferedImage qrImage;
 	private StateController state; 
 	private ArrayList<String> foundQR = new ArrayList<>();
 	private CircleDetection circle;
 	private boolean enabled = true;
 
-	public QRCodeScanner(DroneCommander commander, StateController state, CircleDetection circle){
+	public QRCodeScanner(Commander commander, StateController state, CircleDetection circle){
 		this.commander = commander;
 		this.state = state;
 		this.circle = circle;
@@ -98,9 +100,12 @@ public class QRCodeScanner implements ImageListener
 						//CENTERED
 						System.out.println("QR CENTERED");
 						if(distance>3500){
-							commander.CircleForward();
+//							commander.CircleForward();
+							commander.newCommand(command.CircleForward);
 						} else{
-							commander.UptoCircle();
+//							commander.UptoCircle();
+							
+							commander.newCommand(command.UpToCircle);
 							//							foundQR.add(qrCode.getCode());
 							circle.setEnabled(true);
 							enabled = false;
@@ -113,21 +118,25 @@ public class QRCodeScanner implements ImageListener
 						//						System.out.println("DOWN");
 						//					}
 						if(centerX > image.getWidth()/2-marginSpin) {
-							commander.SpinRightQR();
+//							commander.SpinRightQR();
+							commander.newCommand(command.SpinRightQR);
 
 						} else if(centerX < image.getWidth()/2+marginSpin) {
-							commander.SpinLeftQR();
+//							commander.SpinLeftQR();
+							commander.newCommand(command.SpinLeftQR);
 
 						}
 
 
 						else if(distanceAC+margin > distanceBD){
 							//QR LEFT
-							commander.MoveRightQR();
+//							commander.MoveRightQR();
+							commander.newCommand(command.MoveRightQR);
 						}
 						else if(distanceBD+margin > distanceAC){
 							//QR RIGHT	
-							commander.MoveLeftQR();
+//							commander.MoveLeftQR();
+							commander.newCommand(command.MoveLeftQR);
 						}
 
 
@@ -150,7 +159,8 @@ public class QRCodeScanner implements ImageListener
 					positioning.calculatePosition(qrNames, distances);
 				} else {
 					System.out.println("QR ALREADY DETECTED");
-					commander.Land();
+//					commander.Land();
+					commander.newCommand(command.Landing);
 				}	
 			}
 		}

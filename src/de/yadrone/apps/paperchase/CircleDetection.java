@@ -19,6 +19,7 @@ import de.yadrone.base.navdata.DroneState;
 import de.yadrone.base.navdata.StateListener;
 import de.yadrone.base.video.ImageListener;
 import de.yadrone.apps.paperchase.PaperChaseGUI;
+import de.yadrone.apps.paperchase.Commander.command;
 
 public class CircleDetection implements ImageListener{
 
@@ -35,11 +36,13 @@ public class CircleDetection implements ImageListener{
 	boolean ready = false;
 	StateController state;
 	int sleep = 40;
-	private DroneCommander commander;
+	//private DroneCommander commander;
 	private boolean enabled = false;
 	private int counter = 0;
+	
+	private Commander commander;
 
-	public CircleDetection( StateController state, DroneCommander commander){
+	public CircleDetection( StateController state, Commander commander){
 		super();
 
 		this.state = state;
@@ -95,28 +98,36 @@ public class CircleDetection implements ImageListener{
 
 
 					if(frame.height()/2 + margin < pt.y){
-						commander.CircleDown();
+						//commander.CircleDown();
+						commander.newCommand(command.CircleDown);
+						
 					}
 					else if(frame.height()/2 - margin > pt.y){
-						commander.CircleUp();
+//						commander.CircleUp();
+						commander.newCommand(command.CircleUp);
 					}
 					else if(frame.width()/2+margin < pt.x){
 						if(distanceToObject > 3000)
-							commander.CircleSpinRight();
-						else commander.CircleSpinRightClose();
+//							commander.CircleSpinRight();
+							commander.newCommand(command.CircleSpinRight);
+						else commander.newCommand(command.CircleSpinRightClose);//commander.CircleSpinRightClose();
 					}
 					else if(frame.width()/2-margin > pt.x){
 						if(distanceToObject > 3000)
-							commander.CircleSpinLeft();
-						else commander.CircleSpinLeftClose();
+//							commander.CircleSpinLeft();
+							commander.newCommand(command.CircleSpinLeft);
+						else commander.newCommand(command.CircleSpinLeftClose);//commander.CircleSpinLeftClose();
 					}
 
 					else if(frame.width()/2+margin > pt.x && frame.width()/2-margin<pt.x){
 						if(distanceToObject > 2000){
-							commander.CircleForward();
+//							commander.CircleForward();
+							commander.newCommand(command.CircleForward);
 						}
 						else{
-							commander.GoThroughCircle(distanceToObject);
+//							commander.GoThroughCircle(distanceToObject);
+							commander.setDistance(distanceToObject);
+							commander.newCommand(command.GoThroughCircle);
 							enabled = false;
 						}
 					}
