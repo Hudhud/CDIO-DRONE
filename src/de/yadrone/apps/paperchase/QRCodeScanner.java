@@ -47,6 +47,7 @@ public class QRCodeScanner implements ImageListener
 		this.commander = commander;
 		this.state = state;
 		this.circle = circle;
+		circle.setScanner(this);
 	}
 
 	private Positioning positioning = new Positioning();
@@ -99,14 +100,14 @@ public class QRCodeScanner implements ImageListener
 
 						//CENTERED
 						System.out.println("QR CENTERED");
-						if(distance>3500){
+						if(distance>2800){
 //							commander.CircleForward();
 							commander.newCommand(command.CircleForward);
 						} else{
 //							commander.UptoCircle();
 							
 							commander.newCommand(command.UpToCircle);
-							//							foundQR.add(qrCode.getCode());
+							foundQR.add(qrCode.getCode());
 							circle.setEnabled(true);
 							enabled = false;
 						}
@@ -160,7 +161,7 @@ public class QRCodeScanner implements ImageListener
 				} else {
 					System.out.println("QR ALREADY DETECTED");
 //					commander.Land();
-					commander.newCommand(command.Landing);
+//					commander.newCommand(command.Landing);
 				}	
 			}
 		}
@@ -316,4 +317,7 @@ public class QRCodeScanner implements ImageListener
 		return code.startsWith("P");
 	}
 
+	public void setEnabled(boolean enabled){
+		this.enabled = enabled;
+	}
 }

@@ -27,7 +27,7 @@ public class Commander extends Thread {
 	public enum command{
 		CircleUp,CircleDown,CircleSpinLeft,CircleSpinRight,CircleSpinRightClose,CircleSpinLeftClose,
 		GoThroughCircle,CircleForward,
-		MoveLeftQR,MoveRightQR, SpinLeftQR, SpinRightQR, UpToCircle,
+		MoveLeftQR,MoveRightQR, SpinLeftQR, SpinRightQR, UpToCircle, DownToQR,
 		Landing
 	}
 
@@ -48,7 +48,6 @@ public class Commander extends Thread {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -64,39 +63,37 @@ public class Commander extends Thread {
 		break;
 		case CircleSpinRight: CircleSpinRight();
 		break;
-
 		case CircleSpinLeftClose: CircleSpinLeftClose();
 		break;
-
 		case CircleSpinRightClose: CircleSpinRightClose();
 		break;
-
 		case CircleForward: CircleForward();
 		break;
-
 		case GoThroughCircle: GoThroughCircle(distance);
 		break;
-
 		case MoveLeftQR: MoveLeftQR();
 		break;
-
 		case MoveRightQR: MoveRightQR();
 		break;
-
 		case SpinLeftQR: SpinLeftQR();
 		break;
-
 		case SpinRightQR: SpinRightQR();
 		break;
-
 		case UpToCircle: UptoCircle();
 		break;
-
+		case DownToQR: DownToQR();
+		break;
 		case Landing: Land();
 		break;
-
 		}
 	}
+	
+	public void DownToQR() {
+		System.out.println("DownToQR");
+		drone.getCommandManager().down(20).doFor(1000);
+		Hover();
+	}
+
 
 	public void CircleUp() {
 		System.out.println("UP");
@@ -106,16 +103,14 @@ public class Commander extends Thread {
 
 	public void UptoCircle() {
 		System.out.println("UP to circle");
-		drone.getCommandManager().up(20).doFor(1000);
+		drone.getCommandManager().up(20).doFor(1200);
 		Hover();
-
 	}
 
 	public void CircleDown() {
 		System.out.println("Down");
 		drone.getCommandManager().down(20).doFor(30);
 		Hover();
-
 	}
 
 	public void CircleSpinLeft() {
@@ -149,10 +144,11 @@ public class Commander extends Thread {
 	}
 
 	public void GoThroughCircle(double distance) {
-		final int doFor = (int) distance+300;
+		final int doFor = (int) distance+500;
 		System.out.println("Go Through Circle " +doFor);
 		drone.getCommandManager().forward(20).doFor(doFor).backward(20).doFor(200);
 		Hover();
+		
 	}
 
 	public void MoveRightQR() {

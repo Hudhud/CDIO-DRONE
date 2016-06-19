@@ -63,7 +63,7 @@ public class PaperChase
 		PaperChaseGUI gui = new PaperChaseGUI(drone, this, scanner);
 //		scanner.addListener(gui);
 		drone.getCommandManager().setMaxVideoBitrate(4000);
-		drone.getCommandManager().setVideoBitrate(4000);
+		drone.getCommandManager().setVideoBitrate(1400);
 		drone.getCommandManager().setVideoCodecFps(30);
 		drone.getVideoManager().addImageListener(gui);
 		
