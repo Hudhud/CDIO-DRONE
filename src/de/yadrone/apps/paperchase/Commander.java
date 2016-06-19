@@ -10,8 +10,8 @@ public class Commander extends Thread {
 	private IARDrone drone;
 	private ArrayList<command> queue = new ArrayList<>();
 	private ListIterator<command> iterator;
-
-
+	
+	
 	private double distance;
 	private int index;
 
@@ -27,7 +27,7 @@ public class Commander extends Thread {
 	public enum command{
 		CircleUp,CircleDown,CircleSpinLeft,CircleSpinRight,CircleSpinRightClose,CircleSpinLeftClose,
 		GoThroughCircle,CircleForward,
-		MoveLeftQR,MoveRightQR, SpinLeftQR, SpinRightQR, UpToCircle, DownToQR,
+		MoveLeftQR,MoveRightQR, SpinLeftQR, SpinRightQR, UpToCircle, DownToQR, BackFromQR,
 		Landing
 	}
 
@@ -83,9 +83,17 @@ public class Commander extends Thread {
 		break;
 		case DownToQR: DownToQR();
 		break;
+		case BackFromQR: BackFromQR();
+		break;
 		case Landing: Land();
 		break;
 		}
+	}
+	
+	public void BackFromQR(){
+		System.out.println("BackFromQR");
+		drone.getCommandManager().backward(20).doFor(700).forward(20).doFor(200);
+		Hover();
 	}
 	
 	public void DownToQR() {
@@ -139,12 +147,12 @@ public class Commander extends Thread {
 
 	public void CircleForward() {
 		System.out.println("Forward");
-		drone.getCommandManager().forward(20).doFor(800).backward(20).doFor(200);
+		drone.getCommandManager().forward(20).doFor(600).backward(20).doFor(160);
 		Hover();
 	}
 
 	public void GoThroughCircle(double distance) {
-		final int doFor = (int) distance+500;
+		final int doFor = (int) distance+300;
 		System.out.println("Go Through Circle " +doFor);
 		drone.getCommandManager().forward(20).doFor(doFor).backward(20).doFor(200);
 		Hover();
@@ -153,13 +161,13 @@ public class Commander extends Thread {
 
 	public void MoveRightQR() {
 		System.out.println("Move Right");
-		drone.getCommandManager().goRight(10).doFor(30);
+		drone.getCommandManager().goRight(20).doFor(100);
 		Hover();
 	}
 
 	public void MoveLeftQR() {
 		System.out.println("Move Left");
-		drone.getCommandManager().goLeft(10).doFor(30);
+		drone.getCommandManager().goLeft(20).doFor(100);
 		Hover();
 	}
 
@@ -183,6 +191,24 @@ public class Commander extends Thread {
 		System.out.println("LANDING");
 		drone.getCommandManager().landing();
 	}
+	public void Search(QRCode code){
+		System.out.println("Searching");
+		if (code != null) {
+			if (code.getCode().startsWith("p")) {
+				System.out.println("Done Searching");
+				return;
+			}
+			else{
+				System.out.println("Wall QR found");
+				drone.getCommandManager().spinRight(10).doFor(30);
+			}
+		}
+		drone.getCommandManager().spinRight(10).doFor(30);
+		drone.getCommandManager().spinLeft(10).doFor(30);
+		drone.getCommandManager().forward(20).doFor(30);
+		
+	}
 }
+	
 
 

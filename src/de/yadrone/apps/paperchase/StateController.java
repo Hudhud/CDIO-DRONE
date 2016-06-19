@@ -36,7 +36,6 @@ public class StateController {
 			@Override
 			public void attitudeUpdated(float pitch, float roll) {
 				// TODO Auto-generated method stub
-				
 			}
 
 			@Override

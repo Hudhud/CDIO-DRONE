@@ -12,6 +12,8 @@ public class DroneAI {
 	private ArrayList<QRCode> qrCodes;
 	private Positioning positioning;
 	private int[] startPosition;
+
+	private boolean searching;
 	
 	public DroneAI(IARDrone drone, Commander commander, StateController state, QRCodeScanner scanner){
 		this.drone = drone;
@@ -35,5 +37,22 @@ public class DroneAI {
 		qrCodes.add(code);
 	}
 	
-	//private void 
+	private void searchForQR(QRCode code){
+		if(code == null){
+			searching = true;
+			commander.Search(code);
+		}
+		else {
+			searching = false;
+		}
+		
+	}
+	public boolean isSearching() {
+		return searching;
+	}
+
+	public void setSearching(boolean searching) {
+		this.searching = searching;
+	}
+	
 }

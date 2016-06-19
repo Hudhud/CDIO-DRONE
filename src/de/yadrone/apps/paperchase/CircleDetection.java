@@ -99,45 +99,39 @@ public class CircleDetection implements ImageListener{
 					closestDistance = 9999;
 
 					if(distanceToObject > 3000){
-						margin = (int) (26/(distanceToObject/1000));
+						margin = (int) (25/(distanceToObject/1000));
 					} else
 
 						if(distanceToObject > 2000){
-							margin = (int) (35/(distanceToObject/1000));
+							margin = (int) (30/(distanceToObject/1000));
 						} else
-							margin = (int) (40/(distanceToObject/1000));
-
+						//	margin = (int) (35/(distanceToObject/1000));
+							margin = (int) (30/(distanceToObject/1000));
 
 
 					if(frame.height()/2 + margin < pt.y){
-						//commander.CircleDown();
 						commander.newCommand(command.CircleDown);
 						
 					}
 					else if(frame.height()/2 - margin > pt.y){
-//						commander.CircleUp();
 						commander.newCommand(command.CircleUp);
 					}
 					else if(frame.width()/2+margin < pt.x){
 						if(distanceToObject > 3000)
-//							commander.CircleSpinRight();
 							commander.newCommand(command.CircleSpinRight);
 						else commander.newCommand(command.CircleSpinRightClose);//commander.CircleSpinRightClose();
 					}
 					else if(frame.width()/2-margin > pt.x){
 						if(distanceToObject > 3000)
-//							commander.CircleSpinLeft();
 							commander.newCommand(command.CircleSpinLeft);
 						else commander.newCommand(command.CircleSpinLeftClose);//commander.CircleSpinLeftClose();
 					}
 
 					else if(frame.width()/2+margin > pt.x && frame.width()/2-margin<pt.x){
 						if(distanceToObject > 2000){
-//							commander.CircleForward();
 							commander.newCommand(command.CircleForward);
 						}
 						else{
-//							commander.GoThroughCircle(distanceToObject);
 							commander.setDistance(distanceToObject);
 							commander.newCommand(command.GoThroughCircle);
 							enabled = false;

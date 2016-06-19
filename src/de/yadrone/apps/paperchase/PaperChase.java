@@ -50,15 +50,10 @@ public class PaperChase
 		//state controller
 		state = new StateController(drone);
 		
-		
-		//commander = new DroneCommander(drone);
 		commander = new Commander(drone);
 		commander.start();
 		circle = new CircleDetection(state, commander);
 		scanner = new QRCodeScanner(commander, state, circle);
-		
-//		circle = new CircleDetection(state, commander);
-//		scanner = new QRCodeScanner(commander, state, circle);
 		
 		PaperChaseGUI gui = new PaperChaseGUI(drone, this, scanner);
 //		scanner.addListener(gui);
