@@ -110,7 +110,7 @@ public class Commander extends Thread {
 
 	public void CircleUp() {
 		System.out.println("UP");
-		drone.getCommandManager().up(20).doFor(30);
+		drone.getCommandManager().up(30).doFor(30);
 		Hover();
 	}
 

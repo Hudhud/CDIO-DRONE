@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -39,6 +40,7 @@ public class CircleDetection implements ImageListener{
 	private boolean enabled = false;
 	private int counter = 0;
 	int closestDistance = 9999;
+	private QRCodeScan qr = new QRCodeScan();
 	
 	private Commander commander;
 	private QRCodeScanner scanner;
@@ -67,9 +69,10 @@ public class CircleDetection implements ImageListener{
 				//	Imgproc.equalizeHist(gray, gray);
 				Mat circles = new Mat();
 				Imgproc.HoughCircles(gray, circles, Imgproc.CV_HOUGH_GRADIENT, 1, gray.rows()/8, 225, 100, 50, 160);
+				scanner.positionQR(image);
 				if (circles.cols() > 0){
-
 					System.out.println("Circles found : " + circles.cols());
+					
 					for (int x = 0; x < circles.cols(); x++) 
 					{
 						
