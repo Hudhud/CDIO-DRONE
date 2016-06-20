@@ -125,12 +125,16 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 			{
 				if (state.isFlying())
 				{
+					
+				}
+			}
+
+			public void controlStateChanged(ControlState state) { 
+				if(state == ControlState.HOVERING){
 					startGameTimeCounter();
 					drone.getNavDataManager().removeStateListener(this);
 				}
 			}
-
-			public void controlStateChanged(ControlState state) {  }
 		});
 
 
@@ -352,6 +356,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 				int minutes = (int)(time / (60 * 1000));
 				int seconds = (int)((time / 1000) % 60);
 				gameTime = String.format("%d:%02d", minutes, seconds);
+				scanner.incrementTimer();
 			}
 		};
 

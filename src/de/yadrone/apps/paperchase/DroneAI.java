@@ -37,14 +37,9 @@ public class DroneAI {
 		qrCodes.add(code);
 	}
 	
-	private void searchForQR(QRCode code){
-		if(code == null){
-			searching = true;
-			commander.Search(code);
-		}
-		else {
-			searching = false;
-		}
+	private void searchForQR(){
+		
+			commander.Search();
 		
 	}
 	public boolean isSearching() {

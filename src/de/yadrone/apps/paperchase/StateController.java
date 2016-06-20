@@ -22,7 +22,9 @@ public class StateController {
 	private IARDrone drone;
 	private boolean ready = true;
 	private boolean videoReady = false;
+	private float droneYaw;
 
+	
 	public StateController(IARDrone drone) {
 		this.drone = drone;
 		
@@ -30,7 +32,8 @@ public class StateController {
 
 			public void attitudeUpdated(float pitch, float roll, float yaw)
 			{
-		    //	System.out.println("Pitch: " + pitch + " Roll: " + roll + " Yaw: " + yaw);
+				droneYaw = yaw/1000;
+		    	//System.out.println("Pitch: " + pitch + " Roll: " + roll + " Yaw: " + yaw/1000);
 			}
 
 			@Override
@@ -133,5 +136,13 @@ public class StateController {
 	public boolean isVideoReady() {
 		return videoReady;
 	}
+	public float getYaw() {
+		return droneYaw;
+	}
+
+	public void setYaw(float yaw) {
+		this.droneYaw = yaw;
+	}
+
 
 }

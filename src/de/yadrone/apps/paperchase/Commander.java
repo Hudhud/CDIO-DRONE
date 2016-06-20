@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import de.yadrone.base.IARDrone;
+import de.yadrone.base.navdata.StateListener;
 
 public class Commander extends Thread {
 
@@ -10,8 +11,9 @@ public class Commander extends Thread {
 	private IARDrone drone;
 	private ArrayList<command> queue = new ArrayList<>();
 	private ListIterator<command> iterator;
-	
-	
+	private StateController state;
+
+
 	private double distance;
 	private int index;
 
@@ -24,6 +26,7 @@ public class Commander extends Thread {
 		this.distance = distance;
 	}
 
+
 	public enum command{
 		CircleUp,CircleDown,CircleSpinLeft,CircleSpinRight,CircleSpinRightClose,CircleSpinLeftClose,
 		GoThroughCircle,CircleForward,
@@ -31,9 +34,11 @@ public class Commander extends Thread {
 		Landing
 	}
 
-	public Commander(IARDrone drone) {
+	public Commander(IARDrone drone, StateController state) {
 		this.drone = drone;
+		this.state = state;
 	}
+
 
 	@Override
 	public void run(){
@@ -89,13 +94,13 @@ public class Commander extends Thread {
 		break;
 		}
 	}
-	
+
 	public void BackFromQR(){
 		System.out.println("BackFromQR");
 		drone.getCommandManager().backward(20).doFor(700).forward(20).doFor(200);
 		Hover();
 	}
-	
+
 	public void DownToQR() {
 		System.out.println("DownToQR");
 		drone.getCommandManager().down(20).doFor(1000);
@@ -156,7 +161,7 @@ public class Commander extends Thread {
 		System.out.println("Go Through Circle " +doFor);
 		drone.getCommandManager().forward(20).doFor(doFor).backward(20).doFor(200);
 		Hover();
-		
+
 	}
 
 	public void MoveRightQR() {
@@ -191,24 +196,27 @@ public class Commander extends Thread {
 		System.out.println("LANDING");
 		drone.getCommandManager().landing();
 	}
-	public void Search(QRCode code){
+
+	public void Search(){
 		System.out.println("Searching");
-		if (code != null) {
-			if (code.getCode().startsWith("p")) {
-				System.out.println("Done Searching");
-				return;
+		System.out.println("get yaw " + state.getYaw());
+		double targetYaw = state.getYaw()+25;
+		System.out.println(targetYaw < 360);
+		if(targetYaw < 360) {
+			System.out.println(targetYaw + " < " +state.getYaw()+180);
+			while(targetYaw > state.getYaw()) {
+				System.out.println("Spin");
+				drone.getCommandManager().spinRight(30).doFor(30).hover();
 			}
-			else{
-				System.out.println("Wall QR found");
-				drone.getCommandManager().spinRight(10).doFor(30);
+		} else {
+			targetYaw -= 360;
+			while(state.getYaw() > 300 && targetYaw > state.getYaw()) {
+				System.out.println("Spin");
+				drone.getCommandManager().spinRight(30).doFor(30).hover();
 			}
 		}
-		drone.getCommandManager().spinRight(10).doFor(30);
-		drone.getCommandManager().spinLeft(10).doFor(30);
-		drone.getCommandManager().forward(20).doFor(30);
-		
 	}
 }
-	
+
 
 

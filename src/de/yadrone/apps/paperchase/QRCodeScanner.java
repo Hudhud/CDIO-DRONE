@@ -41,12 +41,15 @@ public class QRCodeScanner implements ImageListener
 	private ArrayList<String> foundQR = new ArrayList<>();
 	private CircleDetection circle;
 	private boolean enabled = true;
-
-	public QRCodeScanner(Commander commander, StateController state, CircleDetection circle){
+	private DroneAI ai;
+	private int timer = 0;
+	public QRCodeScanner(Commander commander, StateController state, CircleDetection circle, DroneAI ai){
 		this.commander = commander;
 		this.state = state;
 		this.circle = circle;
 		circle.setScanner(this);
+		this.ai = ai;
+		
 	}
 
 	private Positioning positioning = new Positioning();
@@ -54,6 +57,11 @@ public class QRCodeScanner implements ImageListener
 
 	public void imageUpdated(BufferedImage image)
 	{
+		if(timer >= 10){
+			commander.Search();
+			timer = 0;
+		}
+		System.out.println(timer);
 		if(enabled){
 			if(state.isReady()){
 				findQRCodes(image);
@@ -66,7 +74,8 @@ public class QRCodeScanner implements ImageListener
 					QRCode qrCode = iterator.next();
 
 					if(isCircle(qrCode.getCode()) && !foundQR.contains(qrCode.getCode())){
-
+						timer=0;
+						
 						//setQrImage(qrCode.getQRimage());
 						double distanceAC = qrCode.getDistanceAC();
 						double distanceBD = qrCode.getDistanceBD();
@@ -90,7 +99,7 @@ public class QRCodeScanner implements ImageListener
 
 						int centrum = image.getWidth()/2;
 
-
+						
 						if(difference > margin && (centerX > centrum + marginSpin)){
 							commander.newCommand(command.MoveRightQR);
 						} else if(difference > margin && (centerX < centrum-marginSpin)){
@@ -151,121 +160,6 @@ public class QRCodeScanner implements ImageListener
 		}
 	}
 
-	private void readMultiple(BinaryBitmap bitmap){
-		QRCodeMultiReader multiReader = new QRCodeMultiReader();
-
-		double theta = Double.NaN;
-		double[] thetas = null;
-		try
-		{
-			//			System.out.println("STARTING TO READ QR");
-			multiScanResult = multiReader.decodeMultiple(bitmap);
-			//double[] thetas = new double[multiScanResult.length];
-			thetas = new double[multiScanResult.length];
-
-			for(int i = 0; i < multiScanResult.length; i++){
-
-				ResultPoint[] points = multiScanResult[i].getResultPoints();
-				ResultPoint a = points[1]; // top-left
-				ResultPoint b = points[2]; // top-right
-				ResultPoint c = points[3];//bottom left
-
-				System.out.println("TOP LEFT X = " + a.getX() + " TOP LEFT Y = " + a.getY());
-				//			System.out.println("TOP RIGHT X = " + b.getX() + " TOP RIGHT Y = " + b.getY());
-				System.out.println("BOTTOM LEFT X = " + c.getX() + " BOTTOM LEFT Y = " + c.getY());
-				// Find the degree of the rotation (needed e.g. for auto control)
-				System.out.println("DISTANCE BETWEEN TOP LEFT AND TOP RIGHT = " + ResultPoint.distance(a, c));
-				float pixel = ResultPoint.distance(a, c);
-				double distanceToObject = 4.45 * 150 * 360 / (pixel * 3.17);
-				System.out.println("DISTANCE IN MM = " + distanceToObject);
-				double z = Math.abs(a.getX() - c.getX());
-				double x = Math.abs(a.getY() - c.getY());
-				thetas[i] = Math.atan(x / z); // degree in rad (+- PI/2)
-
-				thetas[i] = thetas[i] * (180 / Math.PI); // convert to degree
-
-				if ((b.getX() < a.getX()) && (b.getY() > a.getY()))
-				{ // code turned more than 90� clockwise
-					thetas[i] = 180 - thetas[i];
-				}
-				else if ((b.getX() < a.getX()) && (b.getY() < a.getY()))
-				{ // code turned more than 180� clockwise
-					thetas[i] = 180 + thetas[i];
-				}
-				else if ((b.getX() > a.getX()) && (b.getY() < a.getY()))
-				{ // code turned more than 270 clockwise
-					thetas[i] = 360 - thetas[i];
-				}
-			}
-		}
-		catch (ReaderException e) 
-		{
-			// no code found.
-			multiScanResult = null;
-		}
-
-		// inform all listener
-		for (int i=0; i < listener.size(); i++)
-		{
-			//	listener.get(i).onTags(multiScanResult, (float)theta);
-
-			listener.get(i).onTags(multiScanResult, thetas);
-		}
-
-		if(multiScanResult.length >= 3) {
-			//	positioning.calculatePosition(multiScanResult);;
-		} else if(multiScanResult.length >= 2) {
-		}
-	}
-
-	private void readSingle(BinaryBitmap bitmap){
-		QRCodeReader reader = new QRCodeReader();
-
-		double theta = Double.NaN;
-		try
-		{
-			scanResult = reader.decode(bitmap);
-
-			ResultPoint[] points = scanResult.getResultPoints();
-			ResultPoint a = points[1]; // top-left
-			ResultPoint b = points[2]; // top-right
-
-			// Find the degree of the rotation (needed e.g. for auto control)
-
-			double z = Math.abs(a.getX() - b.getX());
-			double x = Math.abs(a.getY() - b.getY());
-			theta = Math.atan(x / z); // degree in rad (+- PI/2)
-
-			theta = theta * (180 / Math.PI); // convert to degree
-
-			if ((b.getX() < a.getX()) && (b.getY() > a.getY()))
-			{ // code turned more than 90� clockwise
-				theta = 180 - theta;
-			}
-			else if ((b.getX() < a.getX()) && (b.getY() < a.getY()))
-			{ // code turned more than 180� clockwise
-				theta = 180 + theta;
-			}
-			else if ((b.getX() > a.getX()) && (b.getY() < a.getY()))
-			{ // code turned more than 270 clockwise
-				theta = 360 - theta;
-			}
-		} 
-		catch (ReaderException e) 
-		{
-			// no code found.
-			scanResult = null;
-		}
-
-		// inform all listener
-		for (int i=0; i < listener.size(); i++)
-		{
-			listener.get(i).onTag(scanResult, (float)theta);
-		}
-	}
-
-
-
 	public void addListener(TagListener listener)
 	{
 		this.listener.add(listener);
@@ -290,5 +184,13 @@ public class QRCodeScanner implements ImageListener
 
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
+	}
+
+	public int getTimer() {
+		return timer;
+	}
+
+	public void incrementTimer() {
+		timer = timer+1;
 	}
 }
