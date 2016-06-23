@@ -1,4 +1,4 @@
-package de.yadrone.apps.paperchase;
+package cdioProjekt.Gruppe14;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -14,13 +14,13 @@ import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import cdioProjekt.Gruppe14.DroneGUI;
+import cdioProjekt.Gruppe14.Commander.command;
 import de.yadrone.base.IARDrone;
 import de.yadrone.base.navdata.ControlState;
 import de.yadrone.base.navdata.DroneState;
 import de.yadrone.base.navdata.StateListener;
 import de.yadrone.base.video.ImageListener;
-import de.yadrone.apps.paperchase.PaperChaseGUI;
-import de.yadrone.apps.paperchase.Commander.command;
 
 public class CircleDetection implements ImageListener{
 
@@ -28,8 +28,7 @@ public class CircleDetection implements ImageListener{
 	double distanceToObject;
 	boolean forward = false;
 	int time;
-	private long imageCount = 0;
-	PaperChaseGUI gui;
+	DroneGUI gui;
 	byte[] pixel = new byte[16];
 	int margin;
 	Mat frame;
@@ -40,7 +39,6 @@ public class CircleDetection implements ImageListener{
 	private boolean enabled = false;
 	private int counter = 0;
 	int closestDistance = 9999;
-	private QRCodeScan qr = new QRCodeScan();
 	
 	private Commander commander;
 	private QRCodeScanner scanner;
@@ -65,8 +63,7 @@ public class CircleDetection implements ImageListener{
 				frame.put(0, 0, pixel);		
 
 				Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY );
-//				Imgproc.blur(gray, gray, new Size(5,5));
-				//	Imgproc.equalizeHist(gray, gray);
+
 				Mat circles = new Mat();
 				Imgproc.HoughCircles(gray, circles, Imgproc.CV_HOUGH_GRADIENT, 1, gray.rows()/8, 225, 100, 50, 160);
 				scanner.positionQR(image);
@@ -108,7 +105,6 @@ public class CircleDetection implements ImageListener{
 						if(distanceToObject > 2000){
 							margin = (int) (30/(distanceToObject/1000));
 						} else
-						//	margin = (int) (35/(distanceToObject/1000));
 							margin = (int) (30/(distanceToObject/1000));
 
 
@@ -122,12 +118,12 @@ public class CircleDetection implements ImageListener{
 					else if(frame.width()/2+margin < pt.x){
 						if(distanceToObject > 3000)
 							commander.newCommand(command.CircleSpinRight);
-						else commander.newCommand(command.CircleSpinRightClose);//commander.CircleSpinRightClose();
+						else commander.newCommand(command.CircleSpinRightClose);
 					}
 					else if(frame.width()/2-margin > pt.x){
 						if(distanceToObject > 3000)
 							commander.newCommand(command.CircleSpinLeft);
-						else commander.newCommand(command.CircleSpinLeftClose);//commander.CircleSpinLeftClose();
+						else commander.newCommand(command.CircleSpinLeftClose);
 					}
 
 					else if(frame.width()/2+margin > pt.x && frame.width()/2-margin<pt.x){

@@ -1,4 +1,4 @@
-package de.yadrone.apps.paperchase;
+package cdioProjekt.Gruppe14;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -32,7 +32,7 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 
 public class QRCodeScan {
-	
+
 	private BufferedImage image;
 	private BufferedImage qrImage;
 	private ArrayList<QRCode> qrList = new ArrayList<QRCode>();
@@ -41,7 +41,7 @@ public class QRCodeScan {
 
 	public ArrayList<QRCode> findQRCodes(Mat newImage) throws Exception {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		
+
 		if(counter == 0)
 			qrList.removeAll(qrList);
 
@@ -53,8 +53,8 @@ public class QRCodeScan {
 		Mat qr_thres = new Mat();
 
 		if (!newImage.empty()) {
-			
-			
+
+
 			qr = Mat.zeros(400, 400, CvType.CV_8UC3);
 			qr_raw = Mat.zeros(400, 400, CvType.CV_8UC3);
 			qr_gray = Mat.zeros(400, 400, CvType.CV_8UC1);
@@ -64,12 +64,10 @@ public class QRCodeScan {
 			MatOfInt4 hierarchy = new MatOfInt4();
 
 			Imgproc.cvtColor(newImage, grey, Imgproc.COLOR_BGR2GRAY);
-//			Imgproc.equalizeHist(grey, grey);
-			
 			Imgproc.Canny(grey, grey, 70, 210, 3, false);
 			Imgproc.findContours(grey, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-			
-			
+
+
 			Moments[] moments = new Moments[contours.size()];
 
 			int found = 0;
@@ -80,9 +78,6 @@ public class QRCodeScan {
 			for (int i = 0; i < hierarchy.rows(); i++) {
 				for (int j = 0; j < hierarchy.cols(); j++) {
 					double[] hieararchyFound = hierarchy.get(i, j);
-					// if (fun[0] != -1) {
-					// count = 0;
-					// }
 					if (hieararchyFound[1] != -1) {
 						count = 0;
 					}
@@ -97,7 +92,6 @@ public class QRCodeScan {
 				}
 			}
 
-//			System.out.println("Squares size = " + squares.size());
 			Point[] points = new Point[contours.size()];
 			for (int i = 0; i < contours.size(); i++) {
 				moments[i] = Imgproc.moments(contours.get(i), false);
@@ -105,7 +99,7 @@ public class QRCodeScan {
 				points[i] = new Point((moments[i].get_m10() / moments[i].get_m00()), (moments[i].get_m01() / moments[i].get_m00()));
 
 			}
-			
+
 
 			List<Point[]> pointList = new ArrayList<>();
 			MatOfPoint2f foundPoints = new MatOfPoint2f();
@@ -121,35 +115,35 @@ public class QRCodeScan {
 			double maxArea = 0;
 			for(int i = 0; i<pointList.size();i++){
 				area = distance(pointList.get(i)[0],pointList.get(i)[1])*distance(pointList.get(i)[0],pointList.get(i)[3]);
-				
+
 				if(maxArea == 0){
 					maxArea = area;
 				}
-				
-				
+
+
 				else if(area > maxArea*2 || area > maxArea*0.8){
 					squareList.add(pointList.get(i));
 				}
-				
-				
+
+
 			}
-			
-			
+
+
 			MatOfPoint2f tempList = new MatOfPoint2f();
 			//
 			Mat shifting = new Mat();
 
 			List<Point> pointsFound = new ArrayList<Point>(tempList.toList());
-			//
+
 			pointsFound.add(new Point(0, 0));
 			pointsFound.add(new Point(qr.cols(), 0));
 			pointsFound.add(new Point(qr.cols(), qr.rows()));
 			pointsFound.add(new Point(0, qr.rows()));
-			//
+
 			Point[] tempPointArray = pointsFound.toArray(new Point[pointsFound.size()]);
 			for (int i = 0; i < pointList.size(); i++) {
 				Imgproc.drawContours(newImage, contours, squares.get(i), new Scalar(100,50,255), 3, 8, hierarchy, 0, new Point(-1,-1));
-				
+
 				MatOfPoint2f source = new MatOfPoint2f(pointList.get(i));
 				MatOfPoint2f newPoint = new MatOfPoint2f(tempPointArray);
 
@@ -161,12 +155,12 @@ public class QRCodeScan {
 					Imgproc.cvtColor(qr_raw, qr_gray, Imgproc.COLOR_RGB2GRAY);
 					Imgproc.threshold(qr_gray, qr_thres, 127, 255, Imgproc.THRESH_BINARY);
 					image = new BufferedImage(qr_gray.width(), qr_gray.height(), BufferedImage.TYPE_BYTE_GRAY);
-					
+
 					byte[] data = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 
 					qr_gray.get(0, 0, data);
 					String result = decode(image);
-					
+
 					if (result != " ") {
 						//qrImage = lort2img(qr_gray);
 						distanceToQr = 4.45 * 400 * 360/ ((distance(pointList.get(i)[0], pointList.get(i)[3]))*3.17);
@@ -177,25 +171,19 @@ public class QRCodeScan {
 						qrList.get(counter).setDistanceBD(distance(corners[1], corners[2]));
 						qrList.get(counter).setDistanceAB(distance(corners[0], corners[1]));
 						qrList.get(counter).setCode(result);
-					//	qrList.get(counter).setQRimg(qrImage);
-						
+
 						qrList.get(counter).setDistance(distanceToQr);
 						counter++;
 						System.out.println(result);
 						System.out.println(distanceToQr);
 
 					}
-					
-					
-//					Imgproc.drawContours(newImage, contours, i, new Scalar(100,100,100));
-					
 				}
 
-				}
+			}
 			setQrImage(mat2img(newImage));
-			
+
 			counter = 0;
-				//return mat2img(newImage);
 			return qrList;
 		}
 
@@ -410,7 +398,7 @@ public class QRCodeScan {
 
 		return img;	
 	}
-	
+
 	public BufferedImage lort2img(Mat input){
 		BufferedImage img = new BufferedImage(input.width(), input.height(), BufferedImage.TYPE_BYTE_GRAY);
 		byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
@@ -425,5 +413,5 @@ public class QRCodeScan {
 	public void setQrImage(BufferedImage qrImage) {
 		this.qrImage = qrImage;
 	}
-	
+
 }

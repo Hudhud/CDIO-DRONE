@@ -1,74 +1,49 @@
-package de.yadrone.apps.paperchase;
+package cdioProjekt.Gruppe14;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.awt.print.Paper;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import com.google.zxing.Result;
-import com.google.zxing.ResultPoint;
-
-import de.yadrone.apps.tutorial.TutorialAttitudeListener;
 import de.yadrone.base.IARDrone;
-import de.yadrone.base.command.CalibrationCommand;
-import de.yadrone.base.command.Device;
 import de.yadrone.base.navdata.BatteryListener;
 import de.yadrone.base.navdata.ControlState;
 import de.yadrone.base.navdata.DroneState;
 import de.yadrone.base.navdata.StateListener;
 import de.yadrone.base.video.ImageListener;
 
-public class PaperChaseGUI extends JFrame implements ImageListener, TagListener, ActionListener 
+public class DroneGUI extends JFrame implements ImageListener, TagListener, ActionListener 
 {
-	private PaperChase main;
+	private Drone main;
 	private IARDrone drone;
 
 	private BufferedImage image = null;
 	private BufferedImage qrImage = null;
-	private Result result;
 	private Result[] multiResult;
-	private String orientation;
 	private String[] orientations;
 
 	private String[] qrToFind = new String[] {"P.00", "P.01"};
 	private boolean[] qrFound = new boolean[] {false, false};
-
-	//QR CODES TO FIND
-	private String[] circlesToFind = new String[] {"W1.03","", "", ""};//??
-	private boolean[] circlePassed = new boolean[] {false, false};
-	private String[] rightWall = new String[] {"","","",""};
-
-
-	//
 
 	private JPanel videoPanel;
 	private JPanel qrPanel;
@@ -85,7 +60,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 
 	private QRCodeScanner scanner;
 
-	public PaperChaseGUI(final IARDrone drone, PaperChase main, QRCodeScanner scanner)
+	public DroneGUI(final IARDrone drone, Drone main, QRCodeScanner scanner)
 	{
 		super("GRUPPE 14");
 
@@ -95,7 +70,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 
 		batteryListener();
 
-		setSize(PaperChase.IMAGE_WIDTH, PaperChase.IMAGE_HEIGHT);
+		setSize(Drone.IMAGE_WIDTH, Drone.IMAGE_HEIGHT);
 		setVisible(true);
 		setResizable(false);
 
@@ -125,7 +100,7 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 			{
 				if (state.isFlying())
 				{
-					
+
 				}
 			}
 
@@ -161,17 +136,17 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 				if(scanner.getQrImage() != null)
 					qrImage = scanner.getQrImage();
 				if (qrImage != null){
-					g.drawImage(qrImage, 0, 0, PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2, null);
+					g.drawImage(qrImage, 0, 0, Drone.IMAGE_WIDTH/2, Drone.IMAGE_HEIGHT/2, null);
 				}
 
 			}
 
 		};
 		//		
-		qrPanel.setSize(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2);
-		qrPanel.setMinimumSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
-		qrPanel.setPreferredSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
-		qrPanel.setMaximumSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
+		qrPanel.setSize(Drone.IMAGE_WIDTH/2, Drone.IMAGE_HEIGHT/2);
+		qrPanel.setMinimumSize(new Dimension(Drone.IMAGE_WIDTH/2, Drone.IMAGE_HEIGHT/2));
+		qrPanel.setPreferredSize(new Dimension(Drone.IMAGE_WIDTH/2, Drone.IMAGE_HEIGHT/2));
+		qrPanel.setMaximumSize(new Dimension(Drone.IMAGE_WIDTH/2, Drone.IMAGE_HEIGHT/2));
 
 		return qrPanel;
 	}
@@ -201,14 +176,14 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 		startknap.setBackground(Color.GREEN);
 		startknap.setVisible(true);
 		startknap.addActionListener(this);
-		
+
 		stopknap = new JButton("STOP");
 		stopknap.setFont(new Font("Arial", Font.BOLD, 60));
 		stopknap.setBackground(Color.RED);
 		stopknap.setVisible(true);
 		stopknap.addActionListener(this);
-		
-			
+
+
 		container.add(startknap);
 		container.add(stopknap);
 
@@ -220,8 +195,6 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 		videoPanel = new JPanel() {
 
 			private Font tagFont = new Font("SansSerif", Font.BOLD, 14);
-			private Font timeFont = new Font("SansSerif", Font.BOLD, 18);
-			private Font gameOverFont = new Font("SansSerif", Font.BOLD, 36);
 
 			public void paint(Graphics g)
 			{
@@ -241,7 +214,6 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 
 					g.drawString("Battery: "+batterypercentage+"%", 0, 15);
 
-					// draw tolerance field (rectangle)
 					g.setColor(Color.RED);
 
 				}
@@ -256,32 +228,13 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 			}
 		});
 
-		videoPanel.setSize(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2);
-		videoPanel.setMinimumSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
-		videoPanel.setPreferredSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
-		videoPanel.setMaximumSize(new Dimension(PaperChase.IMAGE_WIDTH/2, PaperChase.IMAGE_HEIGHT/2));
+		videoPanel.setSize(Drone.IMAGE_WIDTH/2, Drone.IMAGE_HEIGHT/2);
+		videoPanel.setMinimumSize(new Dimension(Drone.IMAGE_WIDTH/2, Drone.IMAGE_HEIGHT/2));
+		videoPanel.setPreferredSize(new Dimension(Drone.IMAGE_WIDTH/2, Drone.IMAGE_HEIGHT/2));
+		videoPanel.setMaximumSize(new Dimension(Drone.IMAGE_WIDTH/2, Drone.IMAGE_HEIGHT/2));
 
 		return videoPanel;
 	}
-
-	//	private JPanel createButtonPanel()
-	//	{
-	//		JPanel buttonPanel = new JPanel();
-	//		
-	//		JButton toggleCamButton = new JButton("Toggle Camera");
-	//		toggleCamButton.addActionListener(new ActionListener() {
-	//			
-	//			@Override
-	//			public void actionPerformed(ActionEvent e)
-	//			{
-	//				drone.toggleCamera();
-	//			}
-	//		});
-	//		
-	//		buttonPanel.add(toggleCamButton);
-	//		
-	//		return buttonPanel;
-	//	}
 
 	private long imageCount = 0;
 
@@ -299,49 +252,6 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 			}
 		});
 	}
-
-	public void onTags(Result[] multiResult, double[] orientation)
-	{
-		if (multiResult != null)
-		{
-			this.multiResult = multiResult;
-			//this.orientation = orientation + ;
-			String[] orientations = new String[multiResult.length];
-
-			// check if that's a tag (shred) which has not be seen before and mark it as 'found'
-			for(int i = 0; i < multiResult.length; i++){
-				orientations[i] = orientation[i] + "°";
-				for (int j=0; j < qrToFind.length; j++)
-				{
-					if (qrToFind[j].equals(multiResult[i].getText()) && !qrFound[i])
-					{
-						qrToFind[j] = qrToFind[j] + " - " + gameTime;
-						qrFound[j] = true;
-					}
-				}
-
-
-				// now check if all shreds have been found and if so, set the gameOver flag
-				boolean isGameOver = true;
-				for (int j=0; j < qrFound.length; j++)
-				{
-					if (qrFound[j] == false)
-						isGameOver = false;
-				}
-
-				if (isGameOver) // all shreds found ?
-				{
-					gameOver = true;
-					stopGameTimeCounter();
-				}
-			}
-			this.orientations = orientations;
-
-		}
-	}
-
-
-
 
 	private void startGameTimeCounter()
 	{
@@ -368,41 +278,16 @@ public class PaperChaseGUI extends JFrame implements ImageListener, TagListener,
 		timer.cancel();
 	}
 
-	@Override
-	public void onTag(Result result, float orientation) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String action = e.getActionCommand();
-		
+
 		if(action.equals("START")){
 			Thread t = new Thread(new Runnable() {
 				public void run() {
 					drone.getCommandManager().takeOff();
-					//						drone.getCommandManager().hover().doFor(2000);
-					//						drone.getCommandManager().up(60).doFor(900);
 					drone.getCommandManager().hover();
-					//						drone.getCommandManager().setCommand(new CalibrationCommand(Device.MAGNETOMETER)).doFor(6000);
-					//						drone.getCommandManager().hover().doFor(1000);
-					//						drone.getCommandManager().forward(100).doFor(1000);
-					//						drone.getCommandManager().backward(60).doFor(400);
-					//						drone.getCommandManager().hover().doFor(1500);
-					//						drone.getCommandManager().spinLeft(100).doFor(1700);
-					//						drone.getCommandManager().hover().doFor(2000);
-					//						drone.getCommandManager().forward(100).doFor(1000);
-					//						drone.getCommandManager().backward(60).doFor(400);
-					//						drone.getCommandManager().hover();
-					//						drone.getCommandManager().forward(100).doFor(1500);
-					//						drone.getCommandManager().backward(60).doFor(400);
-					//						drone.getCommandManager().hover().doFor(1500);
-					//						drone.getCommandManager().backward(100).doFor(2000);
-					//						drone.getCommandManager().forward(100).doFor(200);
-					//						drone.getCommandManager().hover();
-		
-
 				}
 			});
 			t.start();

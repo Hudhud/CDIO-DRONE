@@ -1,4 +1,4 @@
-package de.yadrone.apps.paperchase;
+package cdioProjekt.Gruppe14;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -21,17 +21,13 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.multi.qrcode.QRCodeMultiReader;
 import com.google.zxing.qrcode.QRCodeReader;
 
-import de.yadrone.apps.paperchase.Commander.command;
+import cdioProjekt.Gruppe14.Commander.command;
 import de.yadrone.base.video.ImageListener;
 
 public class QRCodeScanner implements ImageListener
 {
 	private ArrayList<TagListener> listener = new ArrayList<TagListener>();
 
-	private Result scanResult;
-	private Result[] multiScanResult;
-
-	private long imageCount = 0;
 	private QRCodeScan qr = new QRCodeScan();
 	byte[] pixel = new byte[16];
 	private ArrayList<QRCode> qrCodes;
@@ -43,7 +39,7 @@ public class QRCodeScanner implements ImageListener
 	private boolean enabled = true;
 	private DroneAI ai;
 	private int timer = 0;
-	
+
 	public QRCodeScanner(Commander commander, StateController state, CircleDetection circle, DroneAI ai){
 		this.commander = commander;
 		this.state = state;
@@ -52,9 +48,6 @@ public class QRCodeScanner implements ImageListener
 		this.ai = ai;
 
 	}
-
-	private Positioning positioning = new Positioning();
-
 
 	public void imageUpdated(BufferedImage image)
 	{
@@ -76,7 +69,6 @@ public class QRCodeScanner implements ImageListener
 					if(isCircle(qrCode.getCode()) && !foundQR.contains(qrCode.getCode())){
 						timer=0;
 
-						//setQrImage(qrCode.getQRimage());
 						double distanceAC = qrCode.getDistanceAC();
 						double distanceBD = qrCode.getDistanceBD();
 						double distanceAB = qrCode.getDistanceAB();
@@ -117,7 +109,7 @@ public class QRCodeScanner implements ImageListener
 								commander.newCommand(command.BackFromQR);
 							else{
 								commander.newCommand(command.UpToCircle);
-								//							foundQR.add(qrCode.getCode());
+								foundQR.add(qrCode.getCode());
 								circle.setEnabled(true);
 								enabled = false;
 							}
@@ -134,14 +126,11 @@ public class QRCodeScanner implements ImageListener
 
 							//hent data fra deres getMetoder
 							distances[i] = qrCode.getDistance();
-							//do something
 
 						}
 
-						positioning.calculatePosition(qrNames, distances);
 					} else {
 						System.out.println("QR ALREADY DETECTED");
-						//					commander.newCommand(command.Landing);
 					}	
 				}
 			}
@@ -204,7 +193,7 @@ public class QRCodeScanner implements ImageListener
 			//Her kan i få fat i QR koderne
 			QRCode qrCode = iterator.next();
 
-			if(isCircle(qrCode.getCode()) && !foundQR.contains(qrCode.getCode())){
+			if(isCircle(qrCode.getCode())){
 				timer=0;
 
 				double distanceAC = qrCode.getDistanceAC();

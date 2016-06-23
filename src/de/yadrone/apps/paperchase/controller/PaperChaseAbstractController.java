@@ -2,7 +2,7 @@ package de.yadrone.apps.paperchase.controller;
 
 import com.google.zxing.Result;
 
-import de.yadrone.apps.paperchase.TagListener;
+import cdioProjekt.Gruppe14.TagListener;
 import de.yadrone.base.IARDrone;
 
 public abstract class PaperChaseAbstractController extends Thread implements TagListener
