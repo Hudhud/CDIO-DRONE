@@ -26,8 +26,6 @@ import de.yadrone.base.video.ImageListener;
 
 public class QRCodeScanner implements ImageListener
 {
-	private ArrayList<TagListener> listener = new ArrayList<TagListener>();
-
 	private QRCodeScan qr = new QRCodeScan();
 	byte[] pixel = new byte[16];
 	private ArrayList<QRCode> qrCodes;
@@ -119,12 +117,9 @@ public class QRCodeScanner implements ImageListener
 						String[] qrNames = new String[qrCodes.size()];
 
 						for(int i = 0; iterator.hasNext(); i++){
-							//Her kan i f� fat i QR koderne
 							qrCode = iterator.next();
 
 							qrNames[i] = qrCode.getCode();
-
-							//hent data fra deres getMetoder
 							distances[i] = qrCode.getDistance();
 
 						}
@@ -147,16 +142,6 @@ public class QRCodeScanner implements ImageListener
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public void addListener(TagListener listener)
-	{
-		this.listener.add(listener);
-	}
-
-	public void removeListener(TagListener listener)
-	{
-		this.listener.remove(listener);
 	}
 
 	public BufferedImage getQrImage() {

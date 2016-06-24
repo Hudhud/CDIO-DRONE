@@ -1,21 +1,10 @@
 package cdioProjekt.Gruppe14;
 
-import de.yadrone.apps.controlcenter.plugins.speed.SpeedPanel;
 import de.yadrone.base.IARDrone;
-import de.yadrone.base.navdata.AdcFrame;
-import de.yadrone.base.navdata.AdcListener;
-import de.yadrone.base.navdata.Altitude;
-import de.yadrone.base.navdata.AltitudeListener;
 import de.yadrone.base.navdata.AttitudeListener;
 import de.yadrone.base.navdata.ControlState;
 import de.yadrone.base.navdata.DroneState;
-import de.yadrone.base.navdata.GyroListener;
-import de.yadrone.base.navdata.GyroPhysData;
-import de.yadrone.base.navdata.GyroRawData;
-import de.yadrone.base.navdata.MagnetoData;
-import de.yadrone.base.navdata.MagnetoListener;
 import de.yadrone.base.navdata.StateListener;
-import de.yadrone.base.navdata.VelocityListener;
 
 public class StateController {
 

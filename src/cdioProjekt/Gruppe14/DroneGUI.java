@@ -32,7 +32,7 @@ import de.yadrone.base.navdata.DroneState;
 import de.yadrone.base.navdata.StateListener;
 import de.yadrone.base.video.ImageListener;
 
-public class DroneGUI extends JFrame implements ImageListener, TagListener, ActionListener 
+public class DroneGUI extends JFrame implements ImageListener, ActionListener 
 {
 	private Drone main;
 	private IARDrone drone;
@@ -96,13 +96,7 @@ public class DroneGUI extends JFrame implements ImageListener, TagListener, Acti
 		// add listener to be notified once the drone takes off so that the game timer counter starts
 		drone.getNavDataManager().addStateListener(new StateListener() {
 
-			public void stateChanged(DroneState state)
-			{
-				if (state.isFlying())
-				{
-
-				}
-			}
+			public void stateChanged(DroneState state){}
 
 			public void controlStateChanged(ControlState state) { 
 				if(state == ControlState.HOVERING){
@@ -112,16 +106,12 @@ public class DroneGUI extends JFrame implements ImageListener, TagListener, Acti
 			}
 		});
 
-
-
 		container = new JPanel();
 		container.setLayout(new GridLayout(2,2));
 		container.add(videoPanel);
 		container.add(qrPanel);
 
 		createStartKnap();
-
-		//		container.add(jsp);
 
 		this.add(container);
 

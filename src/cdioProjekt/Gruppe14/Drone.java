@@ -15,10 +15,7 @@ public class Drone
 	public final static int IMAGE_WIDTH = 1280; // 640 or 1280
 	public final static int IMAGE_HEIGHT = 720; // 360 or 720
 	
-	public final static int TOLERANCE = 80;
-	
 	private IARDrone drone = null;
-	private PaperChaseAbstractController autoController;
 	private QRCodeScanner scanner = null;
 	private StateController state;
 	private CircleDetection circle = null;
@@ -26,7 +23,6 @@ public class Drone
 	private DroneAI droneAi;
 	public Drone()
 	{
-		
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		
 		drone = new ARDrone();
@@ -41,12 +37,8 @@ public class Drone
 		// keyboard controller is always enabled and cannot be disabled (for safety reasons)
 		PaperChaseKeyboardController keyboardController = new PaperChaseKeyboardController(drone);
 		keyboardController.start();
-			
-	
-		// auto controller is instantiated, but not started
-		autoController = new PaperChaseAutoController(drone);
 		
-		//state controller
+		
 		state = new StateController(drone);
 		droneAi = new DroneAI(drone, commander, state, scanner);
 		commander = new Commander(drone, state);
@@ -78,22 +70,6 @@ public class Drone
 		
 		}
 	}
-	
-	public void enableAutoControl(boolean enable)
-	{
-		if (enable)
-		{
-			scanner.addListener(autoController);
-			autoController.start();
-		}
-		else
-		{
-			autoController.stopController();
-			scanner.removeListener(autoController); // only auto autoController registers as TagListener
-		}
-	}
-	
-	
 	
 	public static void main(String[] args)
 	{

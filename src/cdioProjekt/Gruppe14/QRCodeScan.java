@@ -46,7 +46,6 @@ public class QRCodeScan {
 			qrList.removeAll(qrList);
 
 		Mat grey = new Mat(newImage.size(), CvType.makeType(newImage.depth(), 1));
-		Mat edges = new Mat(newImage.size(), CvType.makeType(newImage.depth(), 1));
 		Mat qr = new Mat();
 		Mat qr_raw = new Mat();
 		Mat qr_gray = new Mat();
@@ -159,10 +158,9 @@ public class QRCodeScan {
 					byte[] data = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 
 					qr_gray.get(0, 0, data);
-					String result = decode(image);
+					String code = readQR(image);
 
-					if (result != " ") {
-						//qrImage = lort2img(qr_gray);
+					if (code != null) {
 						distanceToQr = 4.45 * 400 * 360/ ((distance(pointList.get(i)[0], pointList.get(i)[3]))*3.17);
 						qrList.add(new QRCode());
 						Point[] corners = pointList.get(i);
@@ -170,11 +168,11 @@ public class QRCodeScan {
 						qrList.get(counter).setDistanceAC(distance(corners[0], corners[3]));
 						qrList.get(counter).setDistanceBD(distance(corners[1], corners[2]));
 						qrList.get(counter).setDistanceAB(distance(corners[0], corners[1]));
-						qrList.get(counter).setCode(result);
+						qrList.get(counter).setCode(code);
 
 						qrList.get(counter).setDistance(distanceToQr);
 						counter++;
-						System.out.println(result);
+						System.out.println(code);
 						System.out.println(distanceToQr);
 
 					}
@@ -194,8 +192,7 @@ public class QRCodeScan {
 
 	private MatOfPoint2f corners(ArrayList<MatOfPoint> list, int firstPoint, double slope, MatOfPoint2f matrix) {
 
-		Rect rectangle;
-		rectangle = Imgproc.boundingRect(list.get(firstPoint));
+		Rect rectangle = Imgproc.boundingRect(list.get(firstPoint));
 
 		Point topLeft = new Point(), topRight = new Point(), bottomRight = new Point(), bottomLeft = new Point();
 
@@ -206,10 +203,11 @@ public class QRCodeScan {
 		b.x = rectangle.br().x;
 
 		b.y = rectangle.tl().y;
-		d = rectangle.br();
 		c.x = rectangle.tl().x;
 		c.y = rectangle.br().y;
 
+
+		d = rectangle.br();
 		d.x = (a.x + b.x) / 2;
 		d.y = a.y;
 
@@ -223,7 +221,6 @@ public class QRCodeScan {
 		d.y = (c.y + a.y) / 2;
 
 		double[] maximum = new double[4];
-
 		maximum[0] = 0.0;
 		maximum[1] = 0.0;
 		maximum[2] = 0.0;
@@ -231,7 +228,6 @@ public class QRCodeScan {
 
 		double point1 = 0.0;
 		double point2 = 0.0;
-
 		Point[] pointArray = list.get(firstPoint).toArray();
 
 		if (slope > 5 || slope < -5) {
@@ -272,12 +268,9 @@ public class QRCodeScan {
 						maximum[0] = temp;
 						topLeft = pointArray[i];
 					}
-
 				} else
 					continue;
-
 			}
-
 		}
 
 		else {
@@ -286,7 +279,6 @@ public class QRCodeScan {
 			double middleY = (a.y + c.y) / 2;
 
 			for (int i = 0; i < pointArray.length; i++) {
-
 				if ((pointArray[i].x < middleX) && (pointArray[i].y <= middleY)) {
 
 					temp = distance(pointArray[i], d);
@@ -294,7 +286,6 @@ public class QRCodeScan {
 						maximum[2] = temp;
 						topLeft = pointArray[i];
 					}
-
 				} else if ((pointArray[i].x >= middleX) && (pointArray[i].y < middleY)) {
 
 					temp = distance(pointArray[i], c);
@@ -302,7 +293,6 @@ public class QRCodeScan {
 						maximum[3] = temp;
 						topRight = pointArray[i];
 					}
-
 				} else if ((pointArray[i].x > middleX) && (pointArray[i].y >= middleY)) {
 
 					temp = distance(pointArray[i], a);
@@ -310,7 +300,6 @@ public class QRCodeScan {
 						maximum[0] = temp;
 						bottomRight = pointArray[i];
 					}
-
 				} else if ((pointArray[i].x <= middleX) && (pointArray[i].y > middleY)) {
 
 					temp = distance(pointArray[i], b);
@@ -318,25 +307,20 @@ public class QRCodeScan {
 						maximum[1] = temp;
 						bottomLeft = pointArray[i];
 					}
-
 				}
 			}
-
 		}
 
 		List<Point> corners = new ArrayList<Point>(matrix.toList());
-
 		corners.add(topLeft);
 		corners.add(topRight);
 		corners.add(bottomRight);
 		corners.add(bottomLeft);
 
 		Point[] tempCorners = corners.toArray(new Point[corners.size()]);
-
 		MatOfPoint2f tempMatrix = new MatOfPoint2f(tempCorners);
-
 		matrix = tempMatrix;
-
+		
 		return matrix;
 	}
 
@@ -354,24 +338,19 @@ public class QRCodeScan {
 	}
 
 	private double distance(Point one, Point two) {
-
 		return Math.sqrt(Math.pow(Math.abs(one.x - two.x), 2) + Math.pow(Math.abs(one.y - two.y), 2));
 	}
 
-	private String decode(BufferedImage image) throws IOException {
-
+	private String readQR(BufferedImage image) throws IOException {
 		QRCodeReader qrReader = new QRCodeReader();
 
 		try {
-
 			LuminanceSource source = new BufferedImageLuminanceSource(image);
-
 			BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
 
 			Result result = qrReader.decode(bitmap);
 
 			if (result != null) {
-
 				return result.getText();
 			}
 		} catch (NotFoundException e) {
@@ -379,9 +358,10 @@ public class QRCodeScan {
 		} catch (FormatException e) {
 		}
 
-		return " ";
+		return null;
 	}
 
+	//Den her virker bedst så længe den ik returnerer fejl hvilket er sket før, hvis problemer brug den anden istedet.
 	public BufferedImage mat2img(Mat input){
 		Mat mat = input;
 		byte[] data = new byte[mat.rows()*mat.cols()*(int)(mat.elemSize())];
@@ -399,7 +379,8 @@ public class QRCodeScan {
 		return img;	
 	}
 
-	public BufferedImage lort2img(Mat input){
+	
+	public BufferedImage matToImage(Mat input){
 		BufferedImage img = new BufferedImage(input.width(), input.height(), BufferedImage.TYPE_BYTE_GRAY);
 		byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
 		input.get(0, 0,data);

@@ -72,7 +72,6 @@ public class QRCode {
 	
 	private void setCoordinates(){
 		switch(this.message){
-		
 		case "W00.00":
 			this.coordinates = new Point(188,1055);
 			break;
@@ -133,7 +132,6 @@ public class QRCode {
 		case "W03.04":
 			this.coordinates = new Point(0,997);
 			break;
-			
 			default:
 			break;	
 		}
