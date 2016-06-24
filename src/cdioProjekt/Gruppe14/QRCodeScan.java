@@ -85,7 +85,6 @@ public class QRCodeScan {
 					if (count == 5) {
 						count = 0;
 						found = j - 4;
-
 						squares.add(found);
 					}
 				}
@@ -94,7 +93,6 @@ public class QRCodeScan {
 			Point[] points = new Point[contours.size()];
 			for (int i = 0; i < contours.size(); i++) {
 				moments[i] = Imgproc.moments(contours.get(i), false);
-
 				points[i] = new Point((moments[i].get_m10() / moments[i].get_m00()), (moments[i].get_m01() / moments[i].get_m00()));
 
 			}
